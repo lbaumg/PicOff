@@ -3,4 +3,13 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Challenge</string>
     <string name="title_notifications">Friends</string>
+    <string name="fab_content_desc">Press to start new challenge</string>
+    <string name="button_received">Received</string>
+    <string name="button_sent">Sent</string>
+    <string name="fap1_text">Random</string>
+    <string name="fab2_text">Create new</string>
+    <string name="fab3_text">List challenges</string>
+    <string name="fab1_content_desc">Start with a random challenge</string>
+    <string name="fab2_content_desc">Create a new challenge</string>
+    <string name="fab3_content_desc">Jump to the challenge list</string>
 </resources>

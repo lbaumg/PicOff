@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_home"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,6 +8,7 @@
     tools:context=".ui.home.HomeFragment">
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="380dp"
         android:layout_height="630dp"
         android:layout_marginTop="32dp"
@@ -21,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:background="#00FFFFFF"
-        android:text="Received"
+        android:text="@string/button_received"
         android:textColor="@color/black"
         app:layout_constraintEnd_toStartOf="@+id/buttonSent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -33,10 +35,138 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="#00FFFFFF"
-        android:text="Sent"
+        android:text="@string/button_sent"
         android:textColor="@color/black"
         app:layout_constraintBaseline_toBaselineOf="@+id/buttonReceived"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/buttonReceived" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/baseFloatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:contentDescription="@string/fab_content_desc"
+        android:tint="@android:color/white"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toBottomOf="@+id/activity_home"
+        app:layout_constraintRight_toRightOf="@+id/activity_home"
+        app:srcCompat="@android:drawable/ic_input_add" />
+
+    <LinearLayout
+        android:id="@+id/randomChallengeLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="12dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/createNewLayout"
+        app:layout_constraintRight_toRightOf="@+id/activity_home">
+
+        <TextView
+            android:id="@+id/randomChallengeLabelTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:elevation="2dp"
+            android:fontFamily="sans-serif"
+            android:padding="5dip"
+            android:text="@string/fap1_text"
+            android:textColor="@android:color/black"
+            android:typeface="normal" />
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/randomChallengeFab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:tint="@android:color/white"
+            app:fabSize="mini"
+            app:srcCompat="@android:drawable/ic_input_add"
+            android:contentDescription="@string/fab1_content_desc" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/createNewLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:layout_marginEnd="24dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/listChallengesLayout"
+        app:layout_constraintRight_toRightOf="@+id/activity_home">
+
+        <TextView
+            android:id="@+id/createNewLabelTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+
+            android:elevation="2dp"
+            android:fontFamily="sans-serif"
+            android:padding="5dip"
+            android:text="@string/fab2_text"
+            android:textColor="@android:color/black"
+            android:typeface="normal" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/createNewFab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:tint="@android:color/white"
+            app:fabSize="mini"
+            app:srcCompat="@android:drawable/ic_input_add"
+            android:contentDescription="@string/fab2_content_desc" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/listChallengesLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:layout_marginEnd="24dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/baseFloatingActionButton"
+        app:layout_constraintRight_toRightOf="@+id/activity_home">
+
+        <TextView
+            android:id="@+id/listChallengesLabelTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+
+            android:elevation="2dp"
+            android:fontFamily="sans-serif"
+            android:padding="5dip"
+            android:text="@string/fab3_text"
+            android:textColor="@android:color/black"
+            android:typeface="normal" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/listChallengesFab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:tint="@android:color/white"
+            app:fabSize="mini"
+            app:srcCompat="@android:drawable/ic_input_add"
+            android:contentDescription="@string/fab3_content_desc" />
+
+    </LinearLayout>
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
