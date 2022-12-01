@@ -7,16 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="380dp"
-        android:layout_height="630dp"
-        android:layout_marginTop="32dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonReceived" />
-
     <Button
         android:id="@+id/buttonReceived"
         android:layout_width="wrap_content"
@@ -170,6 +160,19 @@
 
     </LinearLayout>
 
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonReceived"
+        android:name="com.example.challenge.ReceivedFragment"
+        tools:layout="@layout/fragment_received">
+
+    </androidx.fragment.app.FragmentContainerView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,8 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import androidx.lifecycle.ViewModelProvider
 import com.example.challenge.R
+import com.example.challenge.ReceivedFragment
+import com.example.challenge.SentFragment
 import com.example.challenge.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
@@ -40,6 +45,13 @@ class HomeFragment : Fragment() {
             if (onReceiveFragment) {
                 buttonSent.paintFlags = buttonSent.paintFlags or Paint.UNDERLINE_TEXT_FLAG
                 buttonReceived.paintFlags = buttonReceived.paintFlags and Paint.UNDERLINE_TEXT_FLAG.inv()
+
+                childFragmentManager.commit {
+                    setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
+                    replace<SentFragment>(R.id.fragmentContainerView)
+                    addToBackStack(null)
+                }
+
                 onReceiveFragment = false
             }
         }
@@ -47,9 +59,18 @@ class HomeFragment : Fragment() {
             if (!onReceiveFragment) {
                 buttonReceived.paintFlags = buttonReceived.paintFlags or Paint.UNDERLINE_TEXT_FLAG
                 buttonSent.paintFlags = buttonSent.paintFlags and Paint.UNDERLINE_TEXT_FLAG.inv()
+
+                childFragmentManager.commit {
+                    setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right)
+                    replace<ReceivedFragment>(R.id.fragmentContainerView)
+                    addToBackStack(null)
+                }
+
                 onReceiveFragment = true
             }
         }
+
+
 
         return view
     }
