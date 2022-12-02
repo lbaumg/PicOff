@@ -11,8 +11,6 @@ import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.lifecycle.ViewModelProvider
 import com.example.picoff.R
-import com.example.picoff.ReceivedFragment
-import com.example.picoff.SentFragment
 import com.example.picoff.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
@@ -47,7 +45,7 @@ class HomeFragment : Fragment() {
 
                 childFragmentManager.commit {
                     setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
-                    replace<SentFragment>(R.id.fragmentContainerView)
+                    replace<PendingChallengeFragment>(R.id.fragmentContainerView)
                     addToBackStack(null)
                 }
 
@@ -61,7 +59,7 @@ class HomeFragment : Fragment() {
 
                 childFragmentManager.commit {
                     setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right)
-                    replace<ReceivedFragment>(R.id.fragmentContainerView)
+                    replace<PendingChallengeFragment>(R.id.fragmentContainerView)
                     addToBackStack(null)
                 }
 
