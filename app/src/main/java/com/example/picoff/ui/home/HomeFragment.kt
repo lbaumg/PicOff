@@ -1,4 +1,4 @@
-package com.example.challenge.ui.home
+package com.example.picoff.ui.home
 
 import android.graphics.Paint
 import android.os.Bundle
@@ -7,14 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.lifecycle.ViewModelProvider
-import com.example.challenge.R
-import com.example.challenge.ReceivedFragment
-import com.example.challenge.SentFragment
-import com.example.challenge.databinding.FragmentHomeBinding
+import com.example.picoff.R
+import com.example.picoff.ReceivedFragment
+import com.example.picoff.SentFragment
+import com.example.picoff.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
 

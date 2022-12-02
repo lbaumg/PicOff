@@ -1,4 +1,4 @@
-package com.example.challenge.ui.friends
+package com.example.picoff.ui.friends
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

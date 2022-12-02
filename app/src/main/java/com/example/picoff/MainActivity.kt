@@ -1,18 +1,15 @@
-package com.example.challenge
+package com.example.picoff
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.view.animation.OvershootInterpolator
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.example.challenge.databinding.ActivityMainBinding
+import com.example.picoff.databinding.ActivityMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
@@ -40,13 +37,11 @@ class MainActivity : AppCompatActivity() {
         )
         navView.setupWithNavController(navController)
 
-//        supportActionBar?.hide()
-
-
         val baseFloatingActionButton = findViewById<View>(R.id.baseFloatingActionButton)
         baseFloatingActionButton.setOnClickListener {
             if (!isFabMenuOpen) expandFabMenu() else collapseFabMenu()
         }
+
     }
 
     private fun expandFabMenu() {
@@ -76,8 +71,6 @@ class MainActivity : AppCompatActivity() {
         val listChallengesLayout = findViewById<View>(R.id.listChallengesLayout)
         ViewCompat.animate(baseFloatingActionButton).rotation(0.0f).withLayer()
             .setDuration(300).setInterpolator(OvershootInterpolator(10.0f)).start()
-
-
 
         val fabCloseAnimation = AnimationUtils.loadAnimation(this, R.anim.fab_close)
         createNewLayout.startAnimation(fabCloseAnimation)

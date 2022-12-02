@@ -1,4 +1,4 @@
-package com.example.challenge.ui.friends
+package com.example.picoff.ui.challenges
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.challenge.databinding.FragmentFriendsBinding
+import com.example.picoff.databinding.FragmentChallengesBinding
 
-class FriendsFragment : Fragment() {
+class ChallengesFragment : Fragment() {
 
-    private var _binding: FragmentFriendsBinding? = null
+    private var _binding: FragmentChallengesBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -22,14 +22,14 @@ class FriendsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val friendsViewModel =
-            ViewModelProvider(this)[FriendsViewModel::class.java]
+        val challengesViewModel =
+            ViewModelProvider(this)[ChallengesViewModel::class.java]
 
-        _binding = FragmentFriendsBinding.inflate(inflater, container, false)
+        _binding = FragmentChallengesBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textNotifications
-        friendsViewModel.text.observe(viewLifecycleOwner) {
+        val textView: TextView = binding.textDashboard
+        challengesViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
         return root
