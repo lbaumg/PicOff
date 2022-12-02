@@ -33,6 +33,13 @@ android {
         viewBinding true
     }
     namespace 'com.example.picoff'
+    sourceSets {
+        main {
+            res {
+                srcDirs 'src/main/res', 'src/main/res/layouts/home', 'src/main/res/layouts/challenges', 'src/main/res/layouts/friends'
+            }
+        }
+    }
 }
 
 dependencies {
