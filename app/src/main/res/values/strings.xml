@@ -12,4 +12,9 @@
     <string name="fab1_content_desc">Start with a random challenge</string>
     <string name="fab2_content_desc">Create a new challenge</string>
     <string name="fab3_content_desc">Jump to the challenge list</string>
+    <string name="title_activity_new_challenge">NewChallengeActivity</string>
+    <string name="buttonSave">Upload</string>
+    <string name="hintNewChallengeTitle">Title</string>
+    <string name="hintNewChallengeDescription">Enter challenge description here</string>
+    <string name="text_loading_challenges">Loading Challenges.....</string>
 </resources>

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "937184822549",
+    "firebase_url": "https://picoff-5abdb-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "picoff-5abdb",
+    "storage_bucket": "picoff-5abdb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:937184822549:android:eba7ba6170089f1cd9151c",
+        "android_client_info": {
+          "package_name": "com.example.picoff"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "937184822549-ang7ip7tftneojqv8jsbj49f3m6r380p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDP6bBuWdHafC-944LQxtnqTxCj42LuccU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "937184822549-ang7ip7tftneojqv8jsbj49f3m6r380p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
