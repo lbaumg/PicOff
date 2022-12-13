@@ -16,5 +16,7 @@
     <string name="buttonSave">Upload</string>
     <string name="hintNewChallengeTitle">Title</string>
     <string name="hintNewChallengeDescription">Enter challenge description here</string>
-    <string name="text_loading_challenges">Loading Challenges.....</string>
+    <string name="text_loading_challenges">Loading challenges.....</string>
+    <string name="text_loading_pending_challenges">Loading pending challenges.....</string>
+    <string name="text_no_pending_challenges">No pending challenges.</string>
 </resources>

@@ -13,7 +13,6 @@ import com.example.picoff.R
 import com.example.picoff.databinding.FragmentChallengesBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.database.*
-import com.google.firebase.ktx.Firebase
 
 
 class ChallengesFragment : Fragment() {
@@ -77,7 +76,7 @@ class ChallengesFragment : Fragment() {
                     val mAdapter = ChallengesAdapter(challengeList)
                     rvChallenges.adapter = mAdapter
 
-                    mAdapter.setOnItemClickListener(object : ChallengesAdapter.onItemClickListener {
+                    mAdapter.setOnItemClickListener(object : ChallengesAdapter.OnItemClickListener {
                         override fun onItemClick(position: Int) {
 
                         }

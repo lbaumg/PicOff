@@ -7,16 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.example.picoff.R
 import com.example.picoff.databinding.FragmentHomeBinding
-import com.example.picoff.helpers.OnSwipeTouchListener
 
 class HomeFragment : Fragment() {
 
-    private var onReceiveFragment = true
+    private var activeFragment = ActiveFragment.RECEIVED
     private var _binding: FragmentHomeBinding? = null
 
     // This property is only valid between onCreateView and
@@ -25,7 +23,6 @@ class HomeFragment : Fragment() {
 
     private lateinit var btnSent: Button
     private lateinit var btnReceived: Button
-    private lateinit var cvChallengeList: FragmentContainerView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,8 +60,10 @@ class HomeFragment : Fragment() {
         return view
     }
 
+
+
     private fun onButtonSentClicked() {
-        if (onReceiveFragment) {
+        if (activeFragment == ActiveFragment.RECEIVED) {
             btnSent.paintFlags = btnSent.paintFlags or Paint.UNDERLINE_TEXT_FLAG
             btnReceived.paintFlags = btnReceived.paintFlags and Paint.UNDERLINE_TEXT_FLAG.inv()
 
@@ -73,23 +72,21 @@ class HomeFragment : Fragment() {
                 replace<PendingChallengeFragment>(R.id.fragmentContainerView)
                 addToBackStack(null)
             }
-
-            onReceiveFragment = false
+            activeFragment = ActiveFragment.SENT
         }
     }
 
     private fun onButtonReceivedClicked() {
-        btnReceived.paintFlags = btnReceived.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-        btnSent.paintFlags = btnSent.paintFlags and Paint.UNDERLINE_TEXT_FLAG.inv()
+        if (activeFragment == ActiveFragment.SENT) {
+            btnReceived.paintFlags = btnReceived.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+            btnSent.paintFlags = btnSent.paintFlags and Paint.UNDERLINE_TEXT_FLAG.inv()
 
-        childFragmentManager.commit {
-            setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right)
-            replace<PendingChallengeFragment>(R.id.fragmentContainerView)
-            if (!onReceiveFragment) {
+            childFragmentManager.commit {
+                setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right)
+                replace<PendingChallengeFragment>(R.id.fragmentContainerView)
                 addToBackStack(null)
             }
-
-            onReceiveFragment = true
+            activeFragment = ActiveFragment.RECEIVED
         }
     }
 
@@ -97,6 +94,5 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
 
 }

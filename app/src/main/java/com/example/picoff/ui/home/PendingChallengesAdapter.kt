@@ -1,4 +1,4 @@
-package com.example.picoff.ui.challenges
+package com.example.picoff.ui.home
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,8 +7,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.picoff.R
 
-class ChallengesAdapter(private val challengesList: ArrayList<ChallengeModel>) :
-    RecyclerView.Adapter<ChallengesAdapter.ViewHolder>() {
+class PendingChallengesAdapter(private val pendingChallengesList: ArrayList<PendingChallengeModel>) :
+    RecyclerView.Adapter<PendingChallengesAdapter.ViewHolder>() {
 
     private lateinit var mListener: OnItemClickListener
 
@@ -27,12 +27,12 @@ class ChallengesAdapter(private val challengesList: ArrayList<ChallengeModel>) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val currentChallenge = challengesList[position]
-        holder.tvChallengeTitle.text = currentChallenge.challengeTitle
+        val currentPendingChallenge = pendingChallengesList[position]
+        holder.tvChallengeTitle.text = currentPendingChallenge.challengeTitle
     }
 
     override fun getItemCount(): Int {
-        return challengesList.size
+        return pendingChallengesList.size
     }
 
     class ViewHolder (itemView: View, clickListener: OnItemClickListener) : RecyclerView.ViewHolder(itemView){

@@ -1,62 +1,96 @@
 package com.example.picoff.ui.home
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.picoff.R
-import com.example.picoff.ui.home.placeholder.PlaceholderContent
+import com.example.picoff.databinding.FragmentPendingChallengeBinding
+import com.google.firebase.database.*
 
-/**
- * A fragment representing a list of Items.
- */
+
 class PendingChallengeFragment : Fragment() {
 
-    private var columnCount = 1
+    private var _binding: FragmentPendingChallengeBinding? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
 
-        arguments?.let {
-            columnCount = it.getInt(ARG_COLUMN_COUNT)
-        }
-    }
+    private lateinit var rvPendingChallenges: RecyclerView
+    private lateinit var tvLoadingPendingChallenges: TextView
+    private lateinit var pendingChallengesList: ArrayList<PendingChallengeModel>
+
+    private lateinit var dbRef: DatabaseReference
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_pending_challenge_list, container, false)
+    ): View {
 
-        // Set the adapter
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager = when {
-                    columnCount <= 1 -> LinearLayoutManager(context)
-                    else -> GridLayoutManager(context, columnCount)
-                }
-                adapter = MyPendingChallengeRecyclerViewAdapter(PlaceholderContent.ITEMS)
-            }
-        }
-        return view
+        _binding = FragmentPendingChallengeBinding.inflate(inflater, container, false)
+        val root: View = binding.root
+
+        rvPendingChallenges = root.findViewById(R.id.rvPendingChallenges)
+        rvPendingChallenges.layoutManager = LinearLayoutManager(context)
+        rvPendingChallenges.setHasFixedSize(true)
+
+        tvLoadingPendingChallenges = root.findViewById(R.id.tvLoadingPendingChallenges)
+
+        pendingChallengesList = arrayListOf()
+
+        getPendingChallengesData()
+
+        return root
     }
 
-    companion object {
+    private fun getPendingChallengesData() {
+        rvPendingChallenges.visibility = View.GONE
+        tvLoadingPendingChallenges.visibility = View.VISIBLE
 
-        // TODO: Customize parameter argument names
-        const val ARG_COLUMN_COUNT = "column-count"
+        dbRef = FirebaseDatabase.getInstance().getReference("Pending Challenges")
 
-        // TODO: Customize parameter initialization
-        @JvmStatic
-        fun newInstance(columnCount: Int) =
-            PendingChallengeFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(ARG_COLUMN_COUNT, columnCount)
+        dbRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                pendingChallengesList.clear()
+                if (snapshot.exists()) {
+                    for (challengeSnap in snapshot.children) {
+                        val challengeData = challengeSnap.getValue(PendingChallengeModel::class.java)
+                        pendingChallengesList.add(challengeData!!)
+                    }
+                    val mAdapter = PendingChallengesAdapter(pendingChallengesList)
+                    rvPendingChallenges.adapter = mAdapter
+
+                    mAdapter.setOnItemClickListener(object : PendingChallengesAdapter.OnItemClickListener {
+                        override fun onItemClick(position: Int) {
+
+                        }
+
+                    })
+
+                    rvPendingChallenges.visibility = View.VISIBLE
+                    tvLoadingPendingChallenges.visibility = View.GONE
                 }
             }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}
+
+enum class ActiveFragment {
+    RECEIVED, SENT
 }
