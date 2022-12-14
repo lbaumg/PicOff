@@ -78,7 +78,8 @@ class ChallengesFragment : Fragment() {
 
                     mAdapter.setOnItemClickListener(object : ChallengesAdapter.OnItemClickListener {
                         override fun onItemClick(position: Int) {
-
+                            var dialog = ChallengeDialogFragment(challengeList[position])
+                            dialog.show(parentFragmentManager, "challengeDialog")
                         }
 
                     })

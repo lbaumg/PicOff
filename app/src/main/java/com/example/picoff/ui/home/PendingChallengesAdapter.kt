@@ -22,7 +22,7 @@ class PendingChallengesAdapter(private val pendingChallengesList: ArrayList<Pend
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.challenge_list_item, parent, false)
+            .inflate(R.layout.pending_challenge_list_item, parent, false)
         return ViewHolder(itemView, mListener)
     }
 
