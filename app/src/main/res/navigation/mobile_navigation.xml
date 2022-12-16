@@ -12,14 +12,15 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_challenges"
         android:name="com.example.picoff.ui.challenges.ChallengesFragment"
-        android:label="@string/title_dashboard"
+        android:label="@string/title_challenges"
         tools:layout="@layout/fragment_challenges" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
+        android:id="@+id/navigation_friends"
         android:name="com.example.picoff.ui.friends.FriendsFragment"
-        android:label="@string/title_notifications"
+        android:label="@string/title_friends"
         tools:layout="@layout/fragment_friends" />
+
 </navigation>

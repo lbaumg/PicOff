@@ -29,11 +29,10 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        btnSent =  view.findViewById(R.id.buttonSent)
+        btnSent = view.findViewById(R.id.buttonSent)
         btnSent.setOnClickListener {
             onButtonSentClicked()
         }
@@ -44,23 +43,8 @@ class HomeFragment : Fragment() {
             onButtonReceivedClicked()
         }
 
-/*
-        cvChallengeList = view.findViewById(R.id.fragmentContainerView)
-        cvChallengeList.setOnTouchListener(object: OnSwipeTouchListener(context) {
-            override fun onSwipeRight() {
-                onButtonSentClicked()
-            }
-
-            override fun onSwipeLeft() {
-                onButtonReceivedClicked()
-            }
-        } )
-*/
-
         return view
     }
-
-
 
     private fun onButtonSentClicked() {
         if (activeFragment == ActiveFragment.RECEIVED) {

@@ -50,7 +50,7 @@
     </androidx.fragment.app.FragmentContainerView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/baseFloatingActionButton"
+        android:id="@+id/fabBase"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -89,7 +89,7 @@
 
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/randomChallengeFab"
+            android:id="@+id/fabRandomChallenge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"
@@ -126,7 +126,7 @@
             android:typeface="normal" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/createNewFab"
+            android:id="@+id/fabCreateNew"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"
@@ -146,7 +146,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/baseFloatingActionButton"
+        app:layout_constraintBottom_toTopOf="@+id/fabBase"
         app:layout_constraintRight_toRightOf="@+id/activity_home">
 
         <TextView
@@ -163,7 +163,7 @@
             android:typeface="normal" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/listChallengesFab"
+            android:id="@+id/fabListChallenges"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"
