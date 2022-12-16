@@ -5,15 +5,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.example.picoff.ui.MainActivity
+import com.bumptech.glide.Glide
 import com.example.picoff.MainViewModel
 import com.example.picoff.R
-import com.example.picoff.ui.SignInActivity
 import com.example.picoff.databinding.FragmentFriendsBinding
+import com.example.picoff.ui.MainActivity
+import com.example.picoff.ui.SignInActivity
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,6 +29,8 @@ class FriendsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var tvAccountName: TextView
+    private lateinit var ivUserAvatar: ImageView
+
     private lateinit var auth: FirebaseAuth
     private val mainViewModel: MainViewModel by activityViewModels()
 
@@ -56,9 +60,15 @@ class FriendsFragment : Fragment() {
 
         tvAccountName = root.findViewById(R.id.tvAccountName)
         tvAccountName.text =
-            if (mainViewModel.isLoggedIn.value == true) "Logged in as " + "${mainViewModel.accountName.value}"
+            if (mainViewModel.isLoggedIn.value == true) mainViewModel.accountName.value
             else "Not logged in"
         println("FRIENDS: ${mainViewModel.accountName.value}")
+
+
+        var imgUrl = mainViewModel.accountPhotoUrl.value.toString()
+        Glide.with(this).load(imgUrl).into(binding.ivUserAvatar)
+
+
 
         return root
     }
