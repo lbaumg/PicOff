@@ -1,4 +1,4 @@
-package com.example.picoff.ui.home
+package com.example.picoff.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.picoff.R
+import com.example.picoff.models.PendingChallengeModel
 
 class PendingChallengesAdapter(private val pendingChallengesList: ArrayList<PendingChallengeModel>) :
     RecyclerView.Adapter<PendingChallengesAdapter.ViewHolder>() {

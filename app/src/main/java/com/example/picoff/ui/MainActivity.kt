@@ -1,4 +1,4 @@
-package com.example.picoff
+package com.example.picoff.ui
 
 import android.app.Activity
 import android.content.Intent
@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.animation.AnimationUtils
 import android.view.animation.OvershootInterpolator
 import android.widget.LinearLayout
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +14,8 @@ import androidx.core.view.ViewCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.picoff.MainViewModel
+import com.example.picoff.R
 import com.example.picoff.databinding.ActivityMainBinding
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -44,6 +47,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        lifecycleScope.launch {
+            checkIfLoggedInWithGoogle()
+        }
+
         val navView: BottomNavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         navView.setupWithNavController(navController)
@@ -60,9 +67,14 @@ class MainActivity : AppCompatActivity() {
             if (!isFabMenuOpen) expandFabMenu() else collapseFabMenu()
         }
 
-        lifecycleScope.launch {
-            checkIfLoggedInWithGoogle()
-        }
+        onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (isFabMenuOpen)
+                    collapseFabMenu()
+                else
+                    finish()
+            }
+        })
     }
 
     private suspend fun checkIfLoggedInWithGoogle() {
@@ -125,10 +137,4 @@ class MainActivity : AppCompatActivity() {
         isFabMenuOpen = false
     }
 
-    override fun onBackPressed() {
-        if (isFabMenuOpen)
-            collapseFabMenu()
-        else
-            super.onBackPressed()
-    }
 }

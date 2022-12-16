@@ -9,10 +9,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.example.picoff.MainActivity
+import com.example.picoff.ui.MainActivity
 import com.example.picoff.MainViewModel
 import com.example.picoff.R
-import com.example.picoff.SignInActivity
+import com.example.picoff.ui.SignInActivity
 import com.example.picoff.databinding.FragmentFriendsBinding
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint

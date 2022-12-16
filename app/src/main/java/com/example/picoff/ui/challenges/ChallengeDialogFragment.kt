@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.example.picoff.R
+import com.example.picoff.models.ChallengeModel
 
 class ChallengeDialogFragment(private val challengeModel: ChallengeModel) : DialogFragment() {
 

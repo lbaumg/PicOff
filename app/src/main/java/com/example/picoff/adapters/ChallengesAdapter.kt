@@ -1,4 +1,4 @@
-package com.example.picoff.ui.challenges
+package com.example.picoff.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.picoff.R
+import com.example.picoff.models.ChallengeModel
 
 class ChallengesAdapter(private val challengesList: ArrayList<ChallengeModel>) :
     RecyclerView.Adapter<ChallengesAdapter.ViewHolder>() {

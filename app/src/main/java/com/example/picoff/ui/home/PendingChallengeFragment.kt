@@ -9,7 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.picoff.R
+import com.example.picoff.adapters.PendingChallengesAdapter
 import com.example.picoff.databinding.FragmentPendingChallengeBinding
+import com.example.picoff.models.PendingChallengeModel
 import com.google.firebase.database.*
 
 

@@ -1,4 +1,4 @@
-package com.example.picoff.ui.home
+package com.example.picoff.models
 
 data class PendingChallengeModel (
     val challengeId: String? = null,

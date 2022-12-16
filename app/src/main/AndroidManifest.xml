@@ -16,7 +16,7 @@
         android:theme="@style/Theme.Challenge"
         tools:targetApi="31">
         <activity
-            android:name=".SignInActivity"
+            android:name=".ui.SignInActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -33,7 +33,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true"
             android:label="@string/app_name">
             <intent-filter>

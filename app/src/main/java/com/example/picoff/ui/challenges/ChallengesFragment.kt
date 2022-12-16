@@ -10,7 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.picoff.R
+import com.example.picoff.adapters.ChallengesAdapter
 import com.example.picoff.databinding.FragmentChallengesBinding
+import com.example.picoff.models.ChallengeModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.database.*
 

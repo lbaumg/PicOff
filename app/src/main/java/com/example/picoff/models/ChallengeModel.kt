@@ -1,4 +1,4 @@
-package com.example.picoff.ui.challenges
+package com.example.picoff.models
 
 data class ChallengeModel (
     val challengeId: String? = null,
