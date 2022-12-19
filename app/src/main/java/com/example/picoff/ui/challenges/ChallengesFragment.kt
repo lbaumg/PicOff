@@ -78,6 +78,7 @@ class ChallengesFragment : Fragment() {
                     val mAdapter = ChallengesAdapter(challengeList)
                     rvChallenges.adapter = mAdapter
 
+                    // Override onItemClickListener to open ChallengeDialogFragment
                     mAdapter.setOnItemClickListener(object : ChallengesAdapter.OnItemClickListener {
                         override fun onItemClick(position: Int) {
                             val dialog = ChallengeDialogFragment(challengeList[position])
@@ -85,6 +86,7 @@ class ChallengesFragment : Fragment() {
                         }
                     })
 
+                    // Hide loading screen and show
                     rvChallenges.visibility = View.VISIBLE
                     tvLoadingData.visibility = View.GONE
                 }
