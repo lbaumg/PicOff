@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".PicOff"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -23,15 +23,6 @@
                 android:value="" />
         </activity>
 
-        <activity
-            android:name=".ui.challenges.NewChallengeActivity"
-            android:exported="false"
-            android:label="@string/title_activity_new_challenge"
-            android:theme="@style/Theme.Challenge.NoActionBar">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"

@@ -23,10 +23,10 @@ class ChallengeDialogFragment(private val challengeModel: ChallengeModel) : Dial
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        var rootView: View = inflater.inflate(R.layout.fragment_challenge_dialog, container, false)
+        var rootView: View = inflater.inflate(R.layout.fragment_dialog_challenge, container, false)
 
         tvChallengeCreator = rootView.findViewById(R.id.tvChallengeCreator)
-        tvChallengeCreator.text = challengeModel.creator
+        tvChallengeCreator.text = challengeModel.creatorId
 
         tvChallengeDialogTitle = rootView.findViewById(R.id.tvChallengeDialogTitle)
         tvChallengeDialogTitle.text = challengeModel.challengeTitle

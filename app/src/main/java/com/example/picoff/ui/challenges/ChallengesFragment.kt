@@ -1,6 +1,5 @@
 package com.example.picoff.ui.challenges
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -41,13 +40,14 @@ class ChallengesFragment : Fragment() {
         _binding = FragmentChallengesBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        // Set onClickListener to new challenge create button
         btnNewChallenge = root.findViewById(R.id.buttonCreateNew)
         btnNewChallenge.setOnClickListener {
-            val intent = Intent(root.context, NewChallengeActivity::class.java)
-            startActivity(intent)
+            val dialog = CreateNewChallengeDialogFragment()
+            dialog.show(parentFragmentManager, "createNewChallengeDialog")
         }
 
-
+        // Set layout manager for recycler view
         rvChallenges = root.findViewById(R.id.rvChallenges)
         rvChallenges.layoutManager = LinearLayoutManager(context)
         rvChallenges.setHasFixedSize(true)
@@ -55,7 +55,6 @@ class ChallengesFragment : Fragment() {
         tvLoadingData = root.findViewById(R.id.tvLoadingData)
 
         challengeList = arrayListOf()
-
         getChallengesData()
 
         return root
@@ -67,6 +66,7 @@ class ChallengesFragment : Fragment() {
 
         dbRef = FirebaseDatabase.getInstance().getReference("Challenges")
 
+        // TODO if online cache data into local database (or just viewmodel) with creator name -> if offline show those data
         dbRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 challengeList.clear()
@@ -80,10 +80,9 @@ class ChallengesFragment : Fragment() {
 
                     mAdapter.setOnItemClickListener(object : ChallengesAdapter.OnItemClickListener {
                         override fun onItemClick(position: Int) {
-                            var dialog = ChallengeDialogFragment(challengeList[position])
+                            val dialog = ChallengeDialogFragment(challengeList[position])
                             dialog.show(parentFragmentManager, "challengeDialog")
                         }
-
                     })
 
                     rvChallenges.visibility = View.VISIBLE
@@ -92,9 +91,8 @@ class ChallengesFragment : Fragment() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
 
+            }
         })
     }
 

@@ -62,13 +62,15 @@ class PendingChallengeFragment : Fragment() {
                 pendingChallengesList.clear()
                 if (snapshot.exists()) {
                     for (challengeSnap in snapshot.children) {
-                        val challengeData = challengeSnap.getValue(PendingChallengeModel::class.java)
+                        val challengeData =
+                            challengeSnap.getValue(PendingChallengeModel::class.java)
                         pendingChallengesList.add(challengeData!!)
                     }
                     val mAdapter = PendingChallengesAdapter(pendingChallengesList)
                     rvPendingChallenges.adapter = mAdapter
 
-                    mAdapter.setOnItemClickListener(object : PendingChallengesAdapter.OnItemClickListener {
+                    mAdapter.setOnItemClickListener(object :
+                        PendingChallengesAdapter.OnItemClickListener {
                         override fun onItemClick(position: Int) {
 
                         }
@@ -81,7 +83,7 @@ class PendingChallengeFragment : Fragment() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+
             }
 
         })
