@@ -6,13 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.picoff.MainViewModel
 import com.example.picoff.R
 import com.example.picoff.adapters.PendingChallengesAdapter
 import com.example.picoff.databinding.FragmentPendingChallengeBinding
-import com.example.picoff.models.PendingChallengeModel
-import com.google.firebase.database.*
+import kotlinx.coroutines.launch
 
 
 class PendingChallengeFragment : Fragment() {
@@ -25,9 +27,10 @@ class PendingChallengeFragment : Fragment() {
 
     private lateinit var rvPendingChallenges: RecyclerView
     private lateinit var tvLoadingPendingChallenges: TextView
-    private lateinit var pendingChallengesList: ArrayList<PendingChallengeModel>
 
-    private lateinit var dbRef: DatabaseReference
+    private val pendingChallengesAdapter = PendingChallengesAdapter()
+
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,50 +47,27 @@ class PendingChallengeFragment : Fragment() {
 
         tvLoadingPendingChallenges = root.findViewById(R.id.tvLoadingPendingChallenges)
 
-        pendingChallengesList = arrayListOf()
+        rvPendingChallenges.adapter = pendingChallengesAdapter
 
-        getPendingChallengesData()
+        pendingChallengesAdapter.setOnItemClickListener(object :
+            PendingChallengesAdapter.OnItemClickListener {
+            override fun onItemClick(position: Int) {
+                // TODO add on click handling
+            }
+        })
+
+        // Observe mainViewModel.pendingChallengesList and update recycler view on change
+        lifecycleScope.launch {
+            mainViewModel.pendingChallengesList.collect {
+                pendingChallengesAdapter.updatePendingChallengeList(it)
+                rvPendingChallenges.visibility = View.VISIBLE
+                tvLoadingPendingChallenges.visibility = View.GONE
+            }
+        }
 
         return root
     }
 
-    private fun getPendingChallengesData() {
-        rvPendingChallenges.visibility = View.GONE
-        tvLoadingPendingChallenges.visibility = View.VISIBLE
-
-        dbRef = FirebaseDatabase.getInstance().getReference("Pending Challenges")
-
-        dbRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                pendingChallengesList.clear()
-                if (snapshot.exists()) {
-                    for (challengeSnap in snapshot.children) {
-                        val challengeData =
-                            challengeSnap.getValue(PendingChallengeModel::class.java)
-                        pendingChallengesList.add(challengeData!!)
-                    }
-                    val mAdapter = PendingChallengesAdapter(pendingChallengesList)
-                    rvPendingChallenges.adapter = mAdapter
-
-                    mAdapter.setOnItemClickListener(object :
-                        PendingChallengesAdapter.OnItemClickListener {
-                        override fun onItemClick(position: Int) {
-
-                        }
-
-                    })
-
-                    rvPendingChallenges.visibility = View.VISIBLE
-                    tvLoadingPendingChallenges.visibility = View.GONE
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-
-            }
-
-        })
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

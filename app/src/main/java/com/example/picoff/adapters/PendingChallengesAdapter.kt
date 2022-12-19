@@ -8,9 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.picoff.R
 import com.example.picoff.models.PendingChallengeModel
 
-class PendingChallengesAdapter(private val pendingChallengesList: ArrayList<PendingChallengeModel>) :
+class PendingChallengesAdapter() :
     RecyclerView.Adapter<PendingChallengesAdapter.ViewHolder>() {
 
+    private var pendingChallengesList: ArrayList<PendingChallengeModel> = arrayListOf()
     private lateinit var mListener: OnItemClickListener
 
     interface OnItemClickListener {
@@ -34,6 +35,11 @@ class PendingChallengesAdapter(private val pendingChallengesList: ArrayList<Pend
 
     override fun getItemCount(): Int {
         return pendingChallengesList.size
+    }
+
+    fun updatePendingChallengeList(newPendingChallengesList: ArrayList<PendingChallengeModel>) {
+        pendingChallengesList = newPendingChallengesList
+        notifyDataSetChanged()
     }
 
     class ViewHolder (itemView: View, clickListener: OnItemClickListener) : RecyclerView.ViewHolder(itemView){

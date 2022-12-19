@@ -8,8 +8,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.example.picoff.R
 import com.example.picoff.databinding.FragmentFriendsBinding
 import com.example.picoff.ui.SignInActivity
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 
 class FriendsFragment : Fragment() {
@@ -41,6 +44,13 @@ class FriendsFragment : Fragment() {
         binding.btnLogOut.setOnClickListener {
             // Sign out of google
             auth.signOut()
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+            val googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
+            googleSignInClient.signOut()
+
             Toast.makeText(requireContext(), "Signed out!", Toast.LENGTH_SHORT).show()
 
             // Launch SignInActivity

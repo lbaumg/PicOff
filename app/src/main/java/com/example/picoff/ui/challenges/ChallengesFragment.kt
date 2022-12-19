@@ -6,14 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.picoff.MainViewModel
 import com.example.picoff.R
 import com.example.picoff.adapters.ChallengesAdapter
 import com.example.picoff.databinding.FragmentChallengesBinding
-import com.example.picoff.models.ChallengeModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.database.*
 
 
 class ChallengesFragment : Fragment() {
@@ -27,9 +28,10 @@ class ChallengesFragment : Fragment() {
     private lateinit var btnNewChallenge: FloatingActionButton
     private lateinit var rvChallenges: RecyclerView
     private lateinit var tvLoadingData: TextView
-    private lateinit var challengeList: ArrayList<ChallengeModel>
 
-    private lateinit var dbRef: DatabaseReference
+    val challengesAdapter = ChallengesAdapter()
+
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,49 +56,30 @@ class ChallengesFragment : Fragment() {
 
         tvLoadingData = root.findViewById(R.id.tvLoadingData)
 
-        challengeList = arrayListOf()
-        getChallengesData()
+        rvChallenges.adapter = challengesAdapter
+
+        // Update the recycler view when the challenges are loaded
+        mainViewModel.challengesLoaded.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                challengesAdapter.updateChallengeList(mainViewModel.challengeList.value)
+
+                // Hide loading screen and show recycler view
+                rvChallenges.visibility = View.VISIBLE
+                tvLoadingData.visibility = View.GONE
+            }
+        })
+
+        // Override onItemClickListener to open ChallengeDialogFragment
+        challengesAdapter.setOnItemClickListener(object : ChallengesAdapter.OnItemClickListener {
+            override fun onItemClick(position: Int) {
+                val dialog = ChallengeDialogFragment(challengesAdapter.getItemForPosition(position))
+                dialog.show(parentFragmentManager, "challengeDialog")
+            }
+        })
 
         return root
     }
 
-    private fun getChallengesData() {
-        rvChallenges.visibility = View.GONE
-        tvLoadingData.visibility = View.VISIBLE
-
-        dbRef = FirebaseDatabase.getInstance().getReference("Challenges")
-
-        // TODO if online cache data into local database (or just viewmodel) with creator name -> if offline show those data
-        dbRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                challengeList.clear()
-                if (snapshot.exists()) {
-                    for (challengeSnap in snapshot.children) {
-                        val challengeData = challengeSnap.getValue(ChallengeModel::class.java)
-                        challengeList.add(challengeData!!)
-                    }
-                    val mAdapter = ChallengesAdapter(challengeList)
-                    rvChallenges.adapter = mAdapter
-
-                    // Override onItemClickListener to open ChallengeDialogFragment
-                    mAdapter.setOnItemClickListener(object : ChallengesAdapter.OnItemClickListener {
-                        override fun onItemClick(position: Int) {
-                            val dialog = ChallengeDialogFragment(challengeList[position])
-                            dialog.show(parentFragmentManager, "challengeDialog")
-                        }
-                    })
-
-                    // Hide loading screen and show
-                    rvChallenges.visibility = View.VISIBLE
-                    tvLoadingData.visibility = View.GONE
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-
-            }
-        })
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
