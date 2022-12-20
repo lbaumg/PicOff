@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.picoff.R
 import com.example.picoff.models.ChallengeModel
 
-class ChallengesAdapter() :
+class ChallengesAdapter :
     RecyclerView.Adapter<ChallengesAdapter.ViewHolder>() {
     private var challengesList: ArrayList<ChallengeModel> = arrayListOf()
     private lateinit var mListener: OnItemClickListener
@@ -23,7 +23,7 @@ class ChallengesAdapter() :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.challenge_list_item, parent, false)
+            .inflate(R.layout.rv_item_challenge, parent, false)
         return ViewHolder(itemView, mListener)
     }
 

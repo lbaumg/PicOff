@@ -20,7 +20,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/pending_challenge_list_item" />
+        tools:listitem="@layout/rv_item_pending_challenge" />
 
     <TextView
         android:id="@+id/tvLoadingPendingChallenges"

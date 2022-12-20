@@ -1,6 +1,6 @@
 package com.example.picoff.models
 
-data class GoogleAccountModel (
+data class UserModel (
     val uid: String = "",
     val displayName: String? = null,
     val email: String? = null,

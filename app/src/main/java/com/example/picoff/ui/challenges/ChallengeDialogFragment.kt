@@ -30,14 +30,14 @@ class ChallengeDialogFragment(private val challengeModel: ChallengeModel) : Dial
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        var rootView: View = inflater.inflate(R.layout.fragment_dialog_challenge, container, false)
+    ): View {
+        val rootView: View = inflater.inflate(R.layout.dialog_challenge, container, false)
 
         tvChallengeCreator = rootView.findViewById(R.id.tvChallengeCreator)
         ivUserAvatar = rootView.findViewById(R.id.ivChallengeCreatorAvatar)
 
         // Get display name + avatar of challenge creator from firebase
-        var dbRefUsers = FirebaseDatabase.getInstance().getReference("Users/${challengeModel.creatorId}")
+        val dbRefUsers = FirebaseDatabase.getInstance().getReference("Users/${challengeModel.creatorId}")
         dbRefUsers.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val displayName = snapshot.child("displayName").value.toString()

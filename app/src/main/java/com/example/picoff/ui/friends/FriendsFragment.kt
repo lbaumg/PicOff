@@ -7,8 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.picoff.MainViewModel
 import com.example.picoff.R
+import com.example.picoff.adapters.FriendsAdapter
 import com.example.picoff.databinding.FragmentFriendsBinding
 import com.example.picoff.ui.SignInActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -25,6 +30,11 @@ class FriendsFragment : Fragment() {
 
     private lateinit var auth: FirebaseAuth
 
+    private lateinit var rvFriends: RecyclerView
+    private val friendsAdapter = FriendsAdapter()
+
+    private val mainViewModel: MainViewModel by activityViewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -38,7 +48,7 @@ class FriendsFragment : Fragment() {
 
         // Set user name and avatar
         binding.tvAccountName.text = auth.currentUser!!.displayName
-        var imgUrl = auth.currentUser!!.photoUrl.toString()
+        val imgUrl = auth.currentUser!!.photoUrl.toString()
         Glide.with(this).load(imgUrl).into(binding.ivUserAvatar)
 
         binding.btnLogOut.setOnClickListener {
@@ -57,6 +67,19 @@ class FriendsFragment : Fragment() {
             val intent = Intent(requireActivity(), SignInActivity::class.java)
             startActivity(intent)
         }
+
+        // Setup friends recycler view
+        rvFriends = root.findViewById(R.id.rvFriends)
+        rvFriends.layoutManager = GridLayoutManager(context, 3)
+        rvFriends.setHasFixedSize(true)
+        rvFriends.adapter = friendsAdapter
+
+        friendsAdapter.updateData(mainViewModel.users.value)
+        friendsAdapter.setOnItemClickListener(object : FriendsAdapter.OnItemClickListener {
+            override fun onItemClick(position: Int) {
+                // TODO add friend
+            }
+        })
 
         return root
     }

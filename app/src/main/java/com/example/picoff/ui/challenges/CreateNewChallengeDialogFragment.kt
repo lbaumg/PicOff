@@ -27,8 +27,8 @@ class CreateNewChallengeDialogFragment : DialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        var rootView: View = inflater.inflate(R.layout.fragment_dialog_create_new_challenge, container, false)
+    ): View {
+        val rootView: View = inflater.inflate(R.layout.dialog_create_new_challenge, container, false)
 
 
         btnUpload = rootView.findViewById(R.id.btnNewChallengeUpload)

@@ -6,7 +6,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.picoff.R
-import com.example.picoff.models.GoogleAccountModel
+import com.example.picoff.models.UserModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -88,7 +88,7 @@ class SignInActivity : AppCompatActivity() {
                 // Add to Users firebase if not already exists
                 if (!dataSnapshot.child(auth.currentUser!!.uid).exists()) {
                     dbRefUsers.child(auth.currentUser!!.uid).setValue(
-                        GoogleAccountModel(
+                        UserModel(
                             auth.currentUser!!.uid,
                             auth.currentUser!!.displayName,
                             auth.currentUser!!.email,
@@ -99,8 +99,8 @@ class SignInActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(baseContext, "Error", Toast.LENGTH_SHORT).show();
-                Toast.makeText(baseContext, error.message, Toast.LENGTH_SHORT).show();
+                Toast.makeText(baseContext, "Error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(baseContext, error.message, Toast.LENGTH_SHORT).show()
 
             }
         })

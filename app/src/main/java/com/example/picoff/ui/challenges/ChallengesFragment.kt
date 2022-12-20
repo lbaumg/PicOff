@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.picoff.MainViewModel
@@ -29,7 +28,7 @@ class ChallengesFragment : Fragment() {
     private lateinit var rvChallenges: RecyclerView
     private lateinit var tvLoadingData: TextView
 
-    val challengesAdapter = ChallengesAdapter()
+    private val challengesAdapter = ChallengesAdapter()
 
     private val mainViewModel: MainViewModel by activityViewModels()
 
@@ -53,13 +52,13 @@ class ChallengesFragment : Fragment() {
         rvChallenges = root.findViewById(R.id.rvChallenges)
         rvChallenges.layoutManager = LinearLayoutManager(context)
         rvChallenges.setHasFixedSize(true)
+        rvChallenges.adapter = challengesAdapter
 
         tvLoadingData = root.findViewById(R.id.tvLoadingData)
 
-        rvChallenges.adapter = challengesAdapter
 
         // Update the recycler view when the challenges are loaded
-        mainViewModel.challengesLoaded.observe(viewLifecycleOwner, Observer {
+        mainViewModel.challengesLoaded.observe(viewLifecycleOwner) {
             if (it) {
                 challengesAdapter.updateChallengeList(mainViewModel.challengeList.value)
 
@@ -67,7 +66,7 @@ class ChallengesFragment : Fragment() {
                 rvChallenges.visibility = View.VISIBLE
                 tvLoadingData.visibility = View.GONE
             }
-        })
+        }
 
         // Override onItemClickListener to open ChallengeDialogFragment
         challengesAdapter.setOnItemClickListener(object : ChallengesAdapter.OnItemClickListener {

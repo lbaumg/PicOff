@@ -1,28 +1,26 @@
 package com.example.picoff
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.example.picoff.models.ChallengeModel
-import com.example.picoff.models.GoogleAccountModel
 import com.example.picoff.models.PendingChallengeModel
+import com.example.picoff.models.UserModel
 import com.google.firebase.database.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 
-class MainViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
+class MainViewModel : ViewModel() {
 
-    val challengesLoaded = MutableLiveData<Boolean>(false)
+    val challengesLoaded = MutableLiveData(false)
 
     private val _challengeList = MutableStateFlow<ArrayList<ChallengeModel>>(arrayListOf())
     val challengeList = _challengeList.asStateFlow()
 
-
     private val _pendingChallengesList = MutableStateFlow<ArrayList<PendingChallengeModel>>(arrayListOf())
     val pendingChallengesList = _pendingChallengesList.asStateFlow()
 
-    private val _users = MutableStateFlow<ArrayList<GoogleAccountModel>>(arrayListOf())
+    private val _users = MutableStateFlow<ArrayList<UserModel>>(arrayListOf())
     val users = _users.asStateFlow()
 
     private var dbRefChallenges: DatabaseReference =
@@ -42,9 +40,9 @@ class MainViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
         dbRefUsers.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
-                    val tempList = arrayListOf<GoogleAccountModel>()
+                    val tempList = arrayListOf<UserModel>()
                     for (userSnap in snapshot.children) {
-                        val userData = userSnap.getValue(GoogleAccountModel::class.java)
+                        val userData = userSnap.getValue(UserModel::class.java)
                         tempList.add(userData!!)
                     }
                     _users.value = tempList
