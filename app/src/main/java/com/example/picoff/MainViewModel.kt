@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import com.example.picoff.models.ChallengeModel
 import com.example.picoff.models.PendingChallengeModel
 import com.example.picoff.models.UserModel
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -83,6 +85,36 @@ class MainViewModel : ViewModel() {
                     for (challengeSnap in snapshot.children) {
                         val challengeData =
                             challengeSnap.getValue(PendingChallengeModel::class.java)
+
+                        // Load challenger and recipient user data from firebase and store into challengeData
+                        if (challengeData?.uidChallenger != null && challengeData.uidRecipient != null) {
+                            val taskList = mutableListOf<Task<DataSnapshot>>()
+
+                            taskList.add(
+                                FirebaseDatabase.getInstance()
+                                    .getReference("Users").child(challengeData.uidChallenger).get()
+                            )
+                            taskList.add(
+                                FirebaseDatabase.getInstance()
+                                    .getReference("Users").child(challengeData.uidChallenger).get()
+                            )
+
+                            val resultTask = Tasks.whenAll(taskList)
+                            resultTask.addOnCompleteListener {
+                                for ((i, task) in taskList.withIndex()) {
+                                    val user = task.result.getValue(UserModel::class.java)
+                                    if (user != null) {
+                                        if (i == 0) {
+                                            challengeData.nameChallenger = user.displayName
+                                            challengeData.photoUrlChallenger = user.photoUrl
+                                        } else {
+                                            challengeData.nameRecipient = user.displayName
+                                            challengeData.photoUrlRecipient = user.photoUrl
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         tempList.add(challengeData!!)
                     }
 
