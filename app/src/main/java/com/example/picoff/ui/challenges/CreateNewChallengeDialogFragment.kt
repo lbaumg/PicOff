@@ -8,8 +8,9 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
+import com.example.picoff.MainViewModel
 import com.example.picoff.R
-import com.example.picoff.models.ChallengeModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -22,6 +23,8 @@ class CreateNewChallengeDialogFragment : DialogFragment() {
 
     private lateinit var dbRefChallenges: DatabaseReference
     private lateinit var auth: FirebaseAuth
+
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,6 +49,20 @@ class CreateNewChallengeDialogFragment : DialogFragment() {
         btnCancel.setOnClickListener {
             dismiss()
         }
+
+        // Observe status of challenge upload
+        mainViewModel.statusUploadChallenge.observe(viewLifecycleOwner) { status ->
+            status?.let { status ->
+                if (status) {
+                    Toast.makeText(context, "Challenge uploaded!", Toast.LENGTH_SHORT).show()
+                    etChallengeTitle.text.clear()
+                    etChallengeDesc.text.clear()
+                } else {
+                    Toast.makeText(context, "Error: challenge not uploaded", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+
         return rootView
     }
 
@@ -63,19 +80,6 @@ class CreateNewChallengeDialogFragment : DialogFragment() {
             return
         }
 
-        // Create unique key for firebase
-        val challengeId = dbRefChallenges.push().key!!
-
-        // Save challenge into firebase RTDB under "Challenges"
-        val challenge = ChallengeModel(challengeId, challengeTitle, challengeDesc, auth.currentUser!!.uid)
-        dbRefChallenges.child(challengeId).setValue(challenge)
-            .addOnCompleteListener{
-                Toast.makeText(context, "Challenge uploaded!", Toast.LENGTH_LONG).show()
-
-                etChallengeTitle.text.clear()
-                etChallengeDesc.text.clear()
-            }.addOnFailureListener { err ->
-                Toast.makeText(context, "Error ${err.message}", Toast.LENGTH_LONG).show()
-            }
+        mainViewModel.uploadChallenge(challengeTitle, challengeDesc)
     }
 }

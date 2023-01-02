@@ -28,7 +28,7 @@ class SignInActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
 
-        dbRefUsers = FirebaseDatabase.getInstance().getReference("Users")
+        dbRefUsers = FirebaseDatabase.getInstance().reference.child("Users")
 
         // Instantiate auth object and googleSignInClient
         auth = FirebaseAuth.getInstance()

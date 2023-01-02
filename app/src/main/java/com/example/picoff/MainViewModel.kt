@@ -7,7 +7,11 @@ import com.example.picoff.models.PendingChallengeModel
 import com.example.picoff.models.UserModel
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
-import com.google.firebase.database.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -15,6 +19,9 @@ import kotlinx.coroutines.flow.asStateFlow
 class MainViewModel : ViewModel() {
 
     val challengesLoaded = MutableLiveData(false)
+
+    val statusAddFriend = MutableLiveData<Boolean?>()
+    val statusUploadChallenge = MutableLiveData<Boolean?>()
 
     private val _challengeList = MutableStateFlow<ArrayList<ChallengeModel>>(arrayListOf())
     val challengeList = _challengeList.asStateFlow()
@@ -25,17 +32,54 @@ class MainViewModel : ViewModel() {
     private val _users = MutableStateFlow<ArrayList<UserModel>>(arrayListOf())
     val users = _users.asStateFlow()
 
-    private var dbRefChallenges: DatabaseReference =
-        FirebaseDatabase.getInstance().getReference("Challenges")
-    private var dbRefPendingChallenges =
-        FirebaseDatabase.getInstance().getReference("Pending Challenges")
-    private var dbRefUsers =
-        FirebaseDatabase.getInstance().getReference("Users")
+    private val _friends = MutableStateFlow<ArrayList<UserModel>>(arrayListOf())
+    val friends = _friends.asStateFlow()
+
+
+    private var dbRef = FirebaseDatabase.getInstance().reference
+    private var dbRefChallenges = dbRef.child("Challenges")
+    private var dbRefPendingChallenges = dbRef.child("Pending Challenges")
+    private var dbRefUsers = dbRef.child("Users")
+    private var dbRefFriends = dbRef.child("Friends")
+
+    private val auth = FirebaseAuth.getInstance()
 
     init {
         getChallengesData()
         getPendingChallengesData()
         getUsers()
+    }
+
+    private fun getFriends() {
+        if (auth.currentUser == null) {
+            return
+        }
+        dbRefFriends.child(auth.currentUser!!.uid)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        val tempList = arrayListOf<UserModel>()
+                        for (friend in snapshot.children) {
+                            tempList.add(users.value.first { it.uid == friend.key!! })
+                        }
+                        _friends.value = tempList
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {}
+            })
+    }
+
+    fun addFriend(user: UserModel) {
+        if (auth.currentUser == null) {
+            return
+        }
+        dbRefFriends.child(auth.currentUser!!.uid).child(user.uid).setValue(true)
+            .addOnCompleteListener {
+                statusAddFriend.value = true
+            }.addOnFailureListener {
+                statusAddFriend.value = false
+            }
     }
 
     private fun getUsers() {
@@ -49,6 +93,9 @@ class MainViewModel : ViewModel() {
                     }
                     _users.value = tempList
                 }
+
+                // Wait for users to be loaded -> then load friends
+                getFriends()
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -88,15 +135,9 @@ class MainViewModel : ViewModel() {
 
                         // Load challenger and recipient user data from firebase and store into challengeData
                         if (challengeData?.uidChallenger != null && challengeData.uidRecipient != null) {
-                            val taskList = mutableListOf<Task<DataSnapshot>>()
-
-                            taskList.add(
-                                FirebaseDatabase.getInstance()
-                                    .getReference("Users").child(challengeData.uidChallenger).get()
-                            )
-                            taskList.add(
-                                FirebaseDatabase.getInstance()
-                                    .getReference("Users").child(challengeData.uidChallenger).get()
+                            val taskList = mutableListOf<Task<DataSnapshot>>(
+                                dbRefUsers.child(challengeData.uidChallenger).get(),
+                                dbRefUsers.child(challengeData.uidChallenger).get()
                             )
 
                             val resultTask = Tasks.whenAll(taskList)
@@ -127,5 +168,19 @@ class MainViewModel : ViewModel() {
             }
 
         })
+    }
+
+    fun uploadChallenge(challengeTitle: String, challengeDesc: String) {
+        // Create unique key for firebase
+        val challengeId = dbRefChallenges.push().key!!
+
+        // Save challenge into firebase RTDB under "Challenges"
+        val challenge = ChallengeModel(challengeId, challengeTitle, challengeDesc, auth.currentUser!!.uid)
+        dbRefChallenges.child(challengeId).setValue(challenge)
+            .addOnCompleteListener{
+                statusUploadChallenge.value = true
+            }.addOnFailureListener {
+                statusUploadChallenge.value = false
+            }
     }
 }

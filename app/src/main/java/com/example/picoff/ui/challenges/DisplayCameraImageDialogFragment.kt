@@ -1,6 +1,9 @@
 package com.example.picoff.ui.challenges
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +11,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import com.example.picoff.R
@@ -17,7 +21,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class ChallengeDialogFragment(private val challengeModel: ChallengeModel) : DialogFragment() {
+class DisplayCameraImageDialogFragment(private val challengeModel: ChallengeModel) : DialogFragment() {
 
     private lateinit var tvChallengeCreator: TextView
     private lateinit var tvChallengeDialogTitle: TextView
@@ -66,10 +70,23 @@ class ChallengeDialogFragment(private val challengeModel: ChallengeModel) : Dial
 
         btnChallengeFriend = rootView.findViewById(R.id.btnDialogChallengeFriend)
         btnChallengeFriend.setOnClickListener {
+
+
             // TODO open camera to challenge friend
+            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            launcher.launch(intent)
         }
 
         return rootView
     }
+
+    private val launcher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                // TODO store image in firebase cloud storage
+
+                dismiss()
+            }
+        }
 
 }
