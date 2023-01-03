@@ -5,13 +5,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.view.animation.OvershootInterpolator
 import android.widget.Button
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import com.example.picoff.MainViewModel
 import com.example.picoff.R
 import com.example.picoff.databinding.FragmentHomeBinding
+import com.example.picoff.ui.challenges.CreateNewChallengeDialogFragment
 
 class HomeFragment : Fragment() {
 
@@ -24,8 +28,7 @@ class HomeFragment : Fragment() {
     private lateinit var btnSent: Button
     private lateinit var btnReceived: Button
 
-    private val mainViewModel: MainViewModel by activityViewModels()
-
+    private val viewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,11 +49,31 @@ class HomeFragment : Fragment() {
             onButtonReceivedClicked()
         }
 
+        binding.fabBase.setOnClickListener {
+            viewModel.isFabMenuOpen.value = !(viewModel.isFabMenuOpen.value?:false)
+        }
+        binding.fabCreateNew.setOnClickListener {
+            val dialog = CreateNewChallengeDialogFragment()
+            dialog.show(parentFragmentManager, "createNewChallengeDialog")
+        }
+        binding.fabListChallenges.setOnClickListener {
+            viewModel.jumpToChallengeList.value = true
+        }
+
+        viewModel.isFabMenuOpen.observe(viewLifecycleOwner) { isFabMenuOpen ->
+            if (isFabMenuOpen == null) return@observe
+            if (isFabMenuOpen)
+                expandFabMenu()
+            else
+                collapseFabMenu()
+        }
+
+
         return view
     }
 
     private fun onButtonSentClicked() {
-        if (mainViewModel.homeActiveFragment == ActiveFragment.RECEIVED) {
+        if (viewModel.homeActiveFragment == ActiveFragment.RECEIVED) {
             btnSent.paintFlags = btnSent.paintFlags or Paint.UNDERLINE_TEXT_FLAG
             btnReceived.paintFlags = btnReceived.paintFlags and Paint.UNDERLINE_TEXT_FLAG.inv()
 
@@ -60,12 +83,12 @@ class HomeFragment : Fragment() {
                 replace(R.id.fragmentContainerView, fragment)
                 addToBackStack(null)
             }
-            mainViewModel.homeActiveFragment = ActiveFragment.SENT
+            viewModel.homeActiveFragment = ActiveFragment.SENT
         }
     }
 
     private fun onButtonReceivedClicked() {
-        if (mainViewModel.homeActiveFragment == ActiveFragment.SENT) {
+        if (viewModel.homeActiveFragment == ActiveFragment.SENT) {
             btnReceived.paintFlags = btnReceived.paintFlags or Paint.UNDERLINE_TEXT_FLAG
             btnSent.paintFlags = btnSent.paintFlags and Paint.UNDERLINE_TEXT_FLAG.inv()
 
@@ -75,11 +98,40 @@ class HomeFragment : Fragment() {
                 replace(R.id.fragmentContainerView, fragment)
                 addToBackStack(null)
             }
-            mainViewModel.homeActiveFragment = ActiveFragment.RECEIVED
+            viewModel.homeActiveFragment = ActiveFragment.RECEIVED
         }
     }
 
+    private fun expandFabMenu() {
+        ViewCompat.animate(binding.fabBase).rotation(45.0f).withLayer()
+            .setDuration(300).setInterpolator(OvershootInterpolator(10.0f)).start()
+
+        val fabOpenAnimation = AnimationUtils.loadAnimation(context, R.anim.fab_open)
+        binding.randomChallengeLayout.startAnimation(fabOpenAnimation)
+        binding.createNewLayout.startAnimation(fabOpenAnimation)
+        binding.listChallengesLayout.startAnimation(fabOpenAnimation)
+
+        binding.fabCreateNew.isClickable = true
+        binding.fabRandomChallenge.isClickable = true
+        binding.fabListChallenges.isClickable = true
+    }
+
+    private fun collapseFabMenu() {
+        ViewCompat.animate(binding.fabBase).rotation(0.0f).withLayer()
+            .setDuration(300).setInterpolator(OvershootInterpolator(10.0f)).start()
+
+        val fabCloseAnimation = AnimationUtils.loadAnimation(context, R.anim.fab_close)
+        binding.createNewLayout.startAnimation(fabCloseAnimation)
+        binding.randomChallengeLayout.startAnimation(fabCloseAnimation)
+        binding.listChallengesLayout.startAnimation(fabCloseAnimation)
+
+        binding.fabCreateNew.isClickable = false
+        binding.fabRandomChallenge.isClickable = false
+        binding.fabListChallenges.isClickable = false
+    }
+
     override fun onDestroyView() {
+        viewModel.isFabMenuOpen.value = null
         super.onDestroyView()
         _binding = null
     }

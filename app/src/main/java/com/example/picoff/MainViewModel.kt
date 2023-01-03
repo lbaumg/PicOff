@@ -24,6 +24,8 @@ class MainViewModel : ViewModel() {
 
     var homeActiveFragment = ActiveFragment.RECEIVED
 
+    val isFabMenuOpen = MutableLiveData<Boolean?>()
+    val jumpToChallengeList = MutableLiveData<Boolean?>()
     val statusAddFriend = MutableLiveData<Boolean?>()
     val statusUploadChallenge = MutableLiveData<Boolean?>()
 
