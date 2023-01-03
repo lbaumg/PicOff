@@ -24,4 +24,6 @@
     <string name="btn_log_out">Log\nout</string>
     <string name="edittext_hint_search_friend">Search to add new amigo</string>
     <string name="string_create_new_challenge_title">Create new challenge</string>
+    <string name="hint_additional_info">Write some additional information, e.g. how many push ups you did</string>
+    <string name="tv_select_friend_title">Select friend to challenge</string>
 </resources>

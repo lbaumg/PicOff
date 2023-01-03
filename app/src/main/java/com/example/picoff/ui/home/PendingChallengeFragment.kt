@@ -14,6 +14,7 @@ import com.example.picoff.MainViewModel
 import com.example.picoff.R
 import com.example.picoff.adapters.PendingChallengesAdapter
 import com.example.picoff.databinding.FragmentPendingChallengeBinding
+import com.example.picoff.models.PendingChallengeModel
 import kotlinx.coroutines.launch
 
 
@@ -58,8 +59,19 @@ class PendingChallengeFragment : Fragment() {
 
         // Observe mainViewModel.pendingChallengesList and update recycler view on change
         lifecycleScope.launch {
-            mainViewModel.pendingChallengesList.collect {
-                pendingChallengesAdapter.updatePendingChallengeList(it)
+            mainViewModel.pendingChallengesList.collect { pendingChallengesList ->
+                var challengesList = arrayListOf<PendingChallengeModel>()
+                if (mainViewModel.homeActiveFragment == ActiveFragment.RECEIVED ) {
+                    challengesList = pendingChallengesList.filter {
+                        it.uidRecipient ==  mainViewModel.auth.currentUser!!.uid && it.status != "open"
+                    } as ArrayList<PendingChallengeModel>
+                } else if (mainViewModel.homeActiveFragment == ActiveFragment.SENT) {
+                    challengesList = pendingChallengesList.filter {
+                        it.uidChallenger ==  mainViewModel.auth.currentUser!!.uid && it.status == "open"
+                    } as ArrayList<PendingChallengeModel>
+                }
+
+                pendingChallengesAdapter.updatePendingChallengeList(challengesList)
                 rvPendingChallenges.visibility = View.VISIBLE
                 tvLoadingPendingChallenges.visibility = View.GONE
             }

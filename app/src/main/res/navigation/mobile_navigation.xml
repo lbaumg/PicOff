@@ -15,12 +15,24 @@
         android:id="@+id/navigation_challenges"
         android:name="com.example.picoff.ui.challenges.ChallengesFragment"
         android:label="@string/title_challenges"
-        tools:layout="@layout/fragment_challenges" />
+        tools:layout="@layout/fragment_challenges" >
+        <action
+            android:id="@+id/action_navigation_challenges_to_displayCameraImageDialogFragment"
+            app:destination="@id/displayCameraImageDialogFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_friends"
         android:name="com.example.picoff.ui.friends.FriendsFragment"
         android:label="@string/title_friends"
         tools:layout="@layout/fragment_friends" />
+    <fragment
+        android:id="@+id/displayCameraImageDialogFragment"
+        android:name="com.example.picoff.ui.challenges.DisplayCameraImageDialogFragment"
+        android:label="DisplayCameraImageDialogFragment" >
+        <action
+            android:id="@+id/action_displayCameraImageDialogFragment_to_navigation_challenges"
+            app:destination="@id/navigation_challenges" />
+    </fragment>
 
 </navigation>

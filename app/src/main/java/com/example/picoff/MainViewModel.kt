@@ -1,10 +1,12 @@
 package com.example.picoff
 
+import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.picoff.models.ChallengeModel
 import com.example.picoff.models.PendingChallengeModel
 import com.example.picoff.models.UserModel
+import com.example.picoff.ui.home.ActiveFragment
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
@@ -19,6 +21,8 @@ import kotlinx.coroutines.flow.asStateFlow
 class MainViewModel : ViewModel() {
 
     val challengesLoaded = MutableLiveData(false)
+
+    var homeActiveFragment = ActiveFragment.RECEIVED
 
     val statusAddFriend = MutableLiveData<Boolean?>()
     val statusUploadChallenge = MutableLiveData<Boolean?>()
@@ -42,7 +46,7 @@ class MainViewModel : ViewModel() {
     private var dbRefUsers = dbRef.child("Users")
     private var dbRefFriends = dbRef.child("Friends")
 
-    private val auth = FirebaseAuth.getInstance()
+    val auth = FirebaseAuth.getInstance()
 
     init {
         getChallengesData()
@@ -182,5 +186,22 @@ class MainViewModel : ViewModel() {
             }.addOnFailureListener {
                 statusUploadChallenge.value = false
             }
+    }
+
+    fun startNewChallenge(challengeTitle: String, challengeDesc: String, recipient: UserModel, bitmap: Bitmap, additionalInfo: String) {
+        if (auth.currentUser != null) {
+            val challengeId = dbRefPendingChallenges.push().key!!
+            val newChallenge = PendingChallengeModel(
+                challengeId = challengeId,
+                challengeTitle = challengeTitle,
+                challengeDesc = challengeDesc,
+                uidChallenger = auth.currentUser!!.uid,
+                uidRecipient = recipient.uid,
+                additionalInfoChallenger = additionalInfo,
+                status = "sent"
+            )
+            dbRefPendingChallenges.child(challengeId).setValue(newChallenge)
+            // TODO store image in firebase cloud storage
+        }
     }
 }

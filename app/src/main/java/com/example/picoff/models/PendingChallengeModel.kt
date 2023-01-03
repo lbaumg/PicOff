@@ -6,11 +6,13 @@ data class PendingChallengeModel (
     val challengeDesc: String? = null,
     val uidChallenger: String? = null,
     val uidRecipient: String? = null,
-    val status: String? = null,
+    var status: String? = null,
     var nameChallenger: String? = null,
     var nameRecipient: String? = null,
     var photoUrlChallenger: String? = null,
     var photoUrlRecipient: String? = null,
+    var additionalInfoChallenger: String? = null,
+    var additionalInfoRecipient: String? = null
 )
 
 enum class ChallengeStatus {

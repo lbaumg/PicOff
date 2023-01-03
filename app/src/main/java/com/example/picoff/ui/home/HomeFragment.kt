@@ -7,14 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
-import androidx.fragment.app.replace
+import com.example.picoff.MainViewModel
 import com.example.picoff.R
 import com.example.picoff.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
 
-    private var activeFragment = ActiveFragment.RECEIVED
     private var _binding: FragmentHomeBinding? = null
 
     // This property is only valid between onCreateView and
@@ -23,6 +23,9 @@ class HomeFragment : Fragment() {
 
     private lateinit var btnSent: Button
     private lateinit var btnReceived: Button
+
+    private val mainViewModel: MainViewModel by activityViewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,30 +50,32 @@ class HomeFragment : Fragment() {
     }
 
     private fun onButtonSentClicked() {
-        if (activeFragment == ActiveFragment.RECEIVED) {
+        if (mainViewModel.homeActiveFragment == ActiveFragment.RECEIVED) {
             btnSent.paintFlags = btnSent.paintFlags or Paint.UNDERLINE_TEXT_FLAG
             btnReceived.paintFlags = btnReceived.paintFlags and Paint.UNDERLINE_TEXT_FLAG.inv()
 
+            val fragment = PendingChallengeFragment()
             childFragmentManager.commit {
                 setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
-                replace<PendingChallengeFragment>(R.id.fragmentContainerView)
+                replace(R.id.fragmentContainerView, fragment)
                 addToBackStack(null)
             }
-            activeFragment = ActiveFragment.SENT
+            mainViewModel.homeActiveFragment = ActiveFragment.SENT
         }
     }
 
     private fun onButtonReceivedClicked() {
-        if (activeFragment == ActiveFragment.SENT) {
+        if (mainViewModel.homeActiveFragment == ActiveFragment.SENT) {
             btnReceived.paintFlags = btnReceived.paintFlags or Paint.UNDERLINE_TEXT_FLAG
             btnSent.paintFlags = btnSent.paintFlags and Paint.UNDERLINE_TEXT_FLAG.inv()
 
+            val fragment = PendingChallengeFragment()
             childFragmentManager.commit {
                 setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right)
-                replace<PendingChallengeFragment>(R.id.fragmentContainerView)
+                replace(R.id.fragmentContainerView, fragment)
                 addToBackStack(null)
             }
-            activeFragment = ActiveFragment.RECEIVED
+            mainViewModel.homeActiveFragment = ActiveFragment.RECEIVED
         }
     }
 
