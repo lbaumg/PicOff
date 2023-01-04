@@ -10,7 +10,6 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,7 +18,6 @@ import com.example.picoff.R
 import com.example.picoff.adapters.PendingChallengesAdapter
 import com.example.picoff.databinding.FragmentPendingChallengeBinding
 import com.example.picoff.models.PendingChallengeModel
-import kotlinx.coroutines.launch
 
 
 class PendingChallengeFragment : Fragment() {
@@ -72,19 +70,21 @@ class PendingChallengeFragment : Fragment() {
 
                 when (pendingChallenge.status) {
                     "sent" -> { // Show pending challenge in dialog
-                        val dialog = PendingChallengeDialogFragment(pendingChallenge, true)
-                        dialog.show(parentFragmentManager, "pendingChallengeDialog")
+                        openPendingChallengesInfo(pendingChallenge, true)
                     }
                     "open"  -> { // Show pending challenge in dialog
-                        val dialog = PendingChallengeDialogFragment(pendingChallenge, false)
-                        dialog.show(parentFragmentManager, "pendingChallengeDialog")
+                        openPendingChallengesInfo(pendingChallenge, false)
                     }
-                    "vote", "vote1", "vote2" -> { // Jump to vote screen
-                        val intent = Intent(context, VoteActivity::class.java)
-                        intent.putExtra("urlImgChallenger", pendingChallenge.challengeImageUrlChallenger)
-                        intent.putExtra("urlImgRecipient", pendingChallenge.challengeImageUrlRecipient)
-                        selectedPendingChallenge = pendingChallenge
-                        voteChallengerLauncher.launch(intent)
+                    "voteRecipient", "voteChallenger" -> { // Jump to vote screen
+                        if (viewModel.homeActiveFragment == ActiveFragment.RECEIVED) {
+                            val intent = Intent(context, VoteActivity::class.java)
+                            intent.putExtra("urlImgChallenger", pendingChallenge.challengeImageUrlChallenger)
+                            intent.putExtra("urlImgRecipient", pendingChallenge.challengeImageUrlRecipient)
+                            selectedPendingChallenge = pendingChallenge
+                            voteChallengerLauncher.launch(intent)
+                        } else {
+                            openPendingChallengesInfo(pendingChallenge, true)
+                        }
                     }
                     "result", "done" -> { // Open result screen
                         viewModel.hideBottomNav()
@@ -97,30 +97,32 @@ class PendingChallengeFragment : Fragment() {
             }
         })
 
-        // Observe mainViewModel.pendingChallengesList and update recycler view on change
-        lifecycleScope.launch {
-            viewModel.pendingChallengesList.collect { pendingChallengesList ->
+        // Observe mainViewModel.pendingChallengesLoaded and update recycler view on change
+        viewModel.pendingChallengesLoaded.observe(viewLifecycleOwner) { pChLoaded ->
+            if (pChLoaded) {
                 println("PENDING CHALLENGES ADAPTER UPDATE")
                 var challengesList = listOf<PendingChallengeModel>()
                 val isActiveFragmentReceivedScreen = viewModel.homeActiveFragment == ActiveFragment.RECEIVED
                 val isActiveFragmentSentScreen = viewModel.homeActiveFragment == ActiveFragment.SENT
                 if (isActiveFragmentReceivedScreen) {
-                    challengesList = pendingChallengesList.filter {
-                        it.status != "done" &&
-                                (it.uidRecipient == viewModel.auth.currentUser!!.uid  // user is recipient
-                                || (it.uidRecipient == viewModel.auth.currentUser!!.uid && it.status == "vote1") // user is recipient and status is vote1
-                                || (it.uidChallenger == viewModel.auth.currentUser!!.uid && it.status == "vote2") // user is challenger and status is vote2
-                                || it.status == "result") // status is result
+                    challengesList = viewModel.pendingChallengesList.value.filter { pCh ->
+                        pCh.status != "done" && (
+                                (pCh.uidRecipient == viewModel.auth.currentUser!!.uid && pCh.status == "open") // user is recipient and status is open
+                                        || (pCh.uidRecipient == viewModel.auth.currentUser!!.uid && pCh.status == "voteRecipient") // user is recipient and status is vote1
+                                        || (pCh.uidChallenger == viewModel.auth.currentUser!!.uid && pCh.status == "voteChallenger") // user is challenger and status is vote2
+                                        || pCh.status == "result" // status is result
+                                )
                     }
                 } else if (isActiveFragmentSentScreen) {
-                    challengesList = pendingChallengesList.filter {
-                        (it.uidChallenger == viewModel.auth.currentUser!!.uid && it.status == "sent") // user is challenger and status is sent
-                                || (it.uidRecipient == viewModel.auth.currentUser!!.uid && it.status == "vote1") // user is recipient and status is vote1
-                                || it.status == "done"
+                    challengesList = viewModel.pendingChallengesList.value.filter { pCh ->
+                        (pCh.uidChallenger == viewModel.auth.currentUser!!.uid && pCh.status == "sent") // user is challenger and status is sent
+                                || (pCh.uidChallenger == viewModel.auth.currentUser!!.uid && pCh.status == "voteRecipient") // user is recipient and status is vote1
+                                || (pCh.uidRecipient == viewModel.auth.currentUser!!.uid && pCh.status == "voteChallenger") // user is recipient and status is vote1
+                                || pCh.status == "done"
                     }
                 }
 
-                val sortOrder = listOf("result", "vote", "vote1", "vote2", "open", "sent", "done")
+                val sortOrder = listOf("result", "voteRecipient", "voteChallenger", "open", "sent", "done")
                 val sortedChallengesList = challengesList.sortedBy { sortOrder.indexOf(it.status) }
 
                 pendingChallengesAdapter.updatePendingChallengeList(sortedChallengesList, viewModel.homeActiveFragment)
@@ -128,6 +130,7 @@ class PendingChallengeFragment : Fragment() {
                 tvLoadingPendingChallenges.visibility = View.GONE
             }
         }
+
 
         return root
     }
@@ -143,6 +146,11 @@ class PendingChallengeFragment : Fragment() {
                 }
             }
         }
+
+    fun openPendingChallengesInfo(pCh: PendingChallengeModel, showOnlyInfo: Boolean) {
+        val dialog = PendingChallengeDialogFragment(pCh, showOnlyInfo)
+        dialog.show(parentFragmentManager, "pendingChallengeDialog")
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

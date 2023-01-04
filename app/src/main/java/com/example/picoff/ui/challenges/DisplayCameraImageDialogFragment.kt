@@ -71,7 +71,6 @@ class DisplayCameraImageDialogFragment(
                     Toast.makeText(
                         context, "Successfully responded to challenge!", Toast.LENGTH_SHORT
                     ).show()
-                    // TODO Jump to vote screen
                     val intent = Intent(context, VoteActivity::class.java)
                     intent.putExtra("urlImgChallenger", pendingChallenge.challengeImageUrlChallenger)
                     intent.putExtra("urlImgRecipient", pendingChallenge.challengeImageUrlRecipient)
@@ -81,6 +80,7 @@ class DisplayCameraImageDialogFragment(
                         context, "Error: challenge response failed", Toast.LENGTH_SHORT
                     ).show()
                 }
+                viewModel.statusRespondedToChallenge.value = null
             }
         }
 
@@ -93,7 +93,7 @@ class DisplayCameraImageDialogFragment(
             if (result.resultCode == Activity.RESULT_OK) {
                 val vote = result.data?.extras?.getInt("vote")
                 pendingChallenge.voteRecipient = vote
-                pendingChallenge.status = "vote2"
+                pendingChallenge.status = "voteChallenger"
                 viewModel.updatePendingChallengeInFirebase(pendingChallenge)
             }
             dismiss()

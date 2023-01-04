@@ -14,7 +14,7 @@ import com.example.picoff.databinding.ActivityMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 
-
+// TODO Permission handling: ask for camera and storage
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -54,6 +54,10 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.initialize()
+    }
 
     private fun checkIfLoggedInWithGoogle() {
         auth = FirebaseAuth.getInstance()

@@ -58,7 +58,7 @@ class PendingChallengesAdapter() :
         when (currentPendingChallenge.status) {
             "sent" -> color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_sent)
             "open" -> color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_open)
-            "vote", "vote1", "vote2" -> color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_vote)
+            "vote", "voteRecipient", "voteChallenger" -> color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_vote)
             "result" -> color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_result)
             "done" -> color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_done)
         }

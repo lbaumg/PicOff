@@ -33,9 +33,15 @@ const val PREFIX_IMAGE_STORAGE_PATH = "challenges"
 
 class MainViewModel : ViewModel() {
 
-    val challengesLoaded = MutableLiveData(false)
-
     var homeActiveFragment = ActiveFragment.RECEIVED
+
+    private val _challengesLoaded = MutableLiveData(false)
+    val challengesLoaded: LiveData<Boolean>
+        get() = _challengesLoaded
+
+    private val _pendingChallengesLoaded = MutableLiveData(false)
+    val pendingChallengesLoaded: LiveData<Boolean>
+        get() = _pendingChallengesLoaded
 
     val isFabMenuOpen = MutableLiveData<Boolean?>()
     val statusNewChallengeUploaded = MutableLiveData<Boolean?>()
@@ -70,6 +76,10 @@ class MainViewModel : ViewModel() {
     val auth = FirebaseAuth.getInstance()
 
     init {
+        initialize()
+    }
+
+    fun initialize() {
         getUsers()
         getChallengesData()
     }
@@ -147,7 +157,7 @@ class MainViewModel : ViewModel() {
                         tempList.add(challengeData!!)
                     }
                     _challengeList.value = tempList
-                    challengesLoaded.value = true
+                    _challengesLoaded.value = true
                 }
             }
 
@@ -191,6 +201,7 @@ class MainViewModel : ViewModel() {
                     }
 
                     _pendingChallengesList.value = tempList
+                    _pendingChallengesLoaded.value = true
                 }
             }
 
@@ -271,7 +282,7 @@ class MainViewModel : ViewModel() {
                 if (task.isSuccessful) {
                     val challengeImageRecipientUrl = task.result
                     pendingChallenge.challengeImageUrlRecipient = challengeImageRecipientUrl.toString()
-                    pendingChallenge.status = "vote1"
+                    pendingChallenge.status = "voteRecipient"
                     dbRefPendingChallenges.child(pendingChallenge.challengeId!!).setValue(pendingChallenge)
                     statusRespondedToChallenge.value = true
                 } else {
