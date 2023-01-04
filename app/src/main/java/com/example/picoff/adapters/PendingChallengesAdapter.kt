@@ -13,20 +13,32 @@ import com.bumptech.glide.Glide
 import com.example.picoff.R
 import com.example.picoff.models.PendingChallengeModel
 import com.example.picoff.ui.home.ActiveFragment
+import com.google.firebase.auth.FirebaseAuth
 
 class PendingChallengesAdapter() :
     RecyclerView.Adapter<PendingChallengesAdapter.ViewHolder>() {
 
-    private var pendingChallengesList: ArrayList<PendingChallengeModel> = arrayListOf()
+    private var pendingChallengesList: List<PendingChallengeModel> = arrayListOf()
     private lateinit var mListener: OnItemClickListener
+    private lateinit var mListenerLongClick: OnItemLongClickListener
     private var activeFragment: ActiveFragment = ActiveFragment.RECEIVED
+
+    private val auth = FirebaseAuth.getInstance()
 
     interface OnItemClickListener {
         fun onItemClick(position: Int)
     }
 
+    interface OnItemLongClickListener {
+        fun onItemLongClick(position: Int)
+    }
+
     fun setOnItemClickListener(clickListener: OnItemClickListener) {
         mListener = clickListener
+    }
+
+    fun setOnItemLongClickListener(longClickListener: OnItemLongClickListener) {
+        mListenerLongClick = longClickListener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -43,22 +55,26 @@ class PendingChallengesAdapter() :
 
         // Adjust background color of item according to status
         var color = Color.WHITE
-        if (activeFragment == ActiveFragment.RECEIVED) {
-            holder.tvName.text = currentPendingChallenge.nameChallenger
-            Glide.with(holder.ivAvatar.context)
-                .load(currentPendingChallenge.photoUrlChallenger).into(holder.ivAvatar)
-            when (currentPendingChallenge.status) {
-                "sent" -> color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_sent)
-                "vote" -> color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_vote)
-                "result" -> color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_result)
-            }
-        } else {
-            holder.tvName.text = currentPendingChallenge.nameRecipient
-            Glide.with(holder.ivAvatar.context)
-                .load(currentPendingChallenge.photoUrlRecipient).into(holder.ivAvatar)
-            color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_open)
+        when (currentPendingChallenge.status) {
+            "sent" -> color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_sent)
+            "open" -> color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_open)
+            "vote", "vote1", "vote2" -> color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_vote)
+            "result" -> color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_result)
+            "done" -> color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_done)
         }
         holder.cvPendingChallengeItem.setCardBackgroundColor(color)
+
+        val isUserChallenger = auth.currentUser!!.uid == currentPendingChallenge.uidChallenger
+        var opponentName = currentPendingChallenge.nameChallenger
+        var opponentPhotoUrl = currentPendingChallenge.photoUrlChallenger
+        if (isUserChallenger) {
+            opponentName = currentPendingChallenge.nameRecipient
+            opponentPhotoUrl = currentPendingChallenge.photoUrlRecipient
+        }
+
+        holder.tvName.text = opponentName
+        Glide.with(holder.ivAvatar.context)
+            .load(opponentPhotoUrl).into(holder.ivAvatar)
     }
 
     fun getItemForPosition(position: Int): PendingChallengeModel {
@@ -69,7 +85,7 @@ class PendingChallengesAdapter() :
         return pendingChallengesList.size
     }
 
-    fun updatePendingChallengeList(newPendingChallengesList: ArrayList<PendingChallengeModel>, newActiveFragment: ActiveFragment) {
+    fun updatePendingChallengeList(newPendingChallengesList: List<PendingChallengeModel>, newActiveFragment: ActiveFragment) {
         activeFragment = newActiveFragment
         pendingChallengesList = newPendingChallengesList
         notifyDataSetChanged()

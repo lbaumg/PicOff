@@ -36,8 +36,8 @@ class VoteActivity : AppCompatActivity() {
 
         Glide.with(this).load(urlImgChallenger).into(ivImageChallenger)
         Glide.with(this).load(urlImgRecipient).into(ivImageRecipient)
-        Glide.with(this).load(urlImgChallenger).into(ivVs1)
-        Glide.with(this).load(urlImgRecipient).into(ivVs2)
+        Glide.with(this).load(urlImgChallenger).centerCrop().into(ivVs1)
+        Glide.with(this).load(urlImgRecipient).centerCrop().into(ivVs2)
 
         ivImageChallenger.setOnClickListener {
             ivImageChallenger.visibility = View.INVISIBLE

@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="8dp"
+    app:cardBackgroundColor="@color/cardview_challenge_background"
     app:cardElevation="8dp">
 
     <LinearLayout
@@ -28,7 +29,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="Challenge Title"
-                android:textColor="@color/black"
+                android:textColor="@color/challenge_item_text"
                 android:textSize="30sp"
                 android:textStyle="bold" />
 

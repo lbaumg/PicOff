@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.media.ExifInterface
 import android.os.Environment
+import android.view.View
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.picoff.models.ChallengeModel
@@ -42,6 +44,10 @@ class MainViewModel : ViewModel() {
     val statusAddFriend = MutableLiveData<Boolean?>()
     val statusUploadChallenge = MutableLiveData<Boolean?>()
 
+    private val _bottomNavigationVisibility = MutableLiveData<Int>()
+    val bottomNavigationVisibility: LiveData<Int>
+        get() = _bottomNavigationVisibility
+
     private val _challengeList = MutableStateFlow<ArrayList<ChallengeModel>>(arrayListOf())
     val challengeList = _challengeList.asStateFlow()
 
@@ -66,6 +72,14 @@ class MainViewModel : ViewModel() {
     init {
         getUsers()
         getChallengesData()
+    }
+
+    fun showBottomNav() {
+        _bottomNavigationVisibility.value = View.VISIBLE
+    }
+
+    fun hideBottomNav() {
+        _bottomNavigationVisibility.value = View.GONE
     }
 
     private fun getFriends() {
@@ -153,16 +167,26 @@ class MainViewModel : ViewModel() {
                         val challengeData =
                             challengeSnap.getValue(PendingChallengeModel::class.java)
 
-                        // Load challenger and recipient user data from users and store into challengeData
-                        if (challengeData?.uidChallenger != null && challengeData.uidRecipient != null) {
-                            val challenger = users.value.first { it.uid == challengeData.uidChallenger }
-                            val recipient = users.value.first { it.uid == challengeData.uidRecipient }
+                        val isUserRecipient = challengeData?.uidRecipient == auth.currentUser?.uid
+                        val isUserChallenger = challengeData?.uidChallenger == auth.currentUser?.uid
 
-                            challengeData.nameChallenger = challenger.displayName
-                            challengeData.photoUrlChallenger = challenger.photoUrl
-                            challengeData.nameRecipient = recipient.displayName
-                            challengeData.photoUrlRecipient = recipient.photoUrl
+                        if (!isUserChallenger && !isUserRecipient) continue
+
+                        if (isUserRecipient && challengeData?.status == "sent") {
+                            challengeData.status = "open"
                         }
+
+                        // Load challenger and recipient user data from users and store into challengeData
+//                        if (challengeData?.uidChallenger != null && challengeData.uidRecipient != null) {
+//                            val challenger = users.value.first { it.uid == challengeData.uidChallenger }
+//                            val recipient = users.value.first { it.uid == challengeData.uidRecipient }
+//
+//                            challengeData.nameChallenger = challenger.displayName
+//                            challengeData.photoUrlChallenger = challenger.photoUrl
+//                            challengeData.nameRecipient = recipient.displayName
+//                            challengeData.photoUrlRecipient = recipient.photoUrl
+//                        }
+                        println("CHALLENGE:" + challengeData?.status + " " + challengeData?.challengeTitle + " " + challengeData?.nameChallenger + " "+ challengeData?.nameRecipient)
                         tempList.add(challengeData!!)
                     }
 
@@ -247,7 +271,7 @@ class MainViewModel : ViewModel() {
                 if (task.isSuccessful) {
                     val challengeImageRecipientUrl = task.result
                     pendingChallenge.challengeImageUrlRecipient = challengeImageRecipientUrl.toString()
-                    pendingChallenge.status = "vote"
+                    pendingChallenge.status = "vote1"
                     dbRefPendingChallenges.child(pendingChallenge.challengeId!!).setValue(pendingChallenge)
                     statusRespondedToChallenge.value = true
                 } else {
@@ -308,6 +332,4 @@ class MainViewModel : ViewModel() {
             scale.height, matrix, true
         )
     }
-
-
 }

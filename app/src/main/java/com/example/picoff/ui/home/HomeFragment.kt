@@ -130,6 +130,11 @@ class HomeFragment : Fragment() {
         binding.fabListChallenges.isClickable = false
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.showBottomNav()
+    }
+
     override fun onPause() {
         super.onPause()
         viewModel.homeActiveFragment = ActiveFragment.RECEIVED

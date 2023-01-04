@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.picoff.MainViewModel
@@ -47,7 +48,12 @@ class MainActivity : AppCompatActivity() {
         viewModel.jumpToChallengeList.observe(this) {
             binding.navView.selectedItemId = R.id.navigation_challenges
         }
+
+        viewModel.bottomNavigationVisibility.observe(this, Observer { navVisibility ->
+            navView.visibility = navVisibility
+        })
     }
+
 
     private fun checkIfLoggedInWithGoogle() {
         auth = FirebaseAuth.getInstance()

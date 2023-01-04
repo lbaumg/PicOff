@@ -21,7 +21,7 @@ import com.example.picoff.ui.challenges.DisplayCameraImageDialogFragment
 import java.io.File
 
 
-class PendingChallengeDialogFragment(private val pendingChallenge: PendingChallengeModel) : DialogFragment() {
+class PendingChallengeDialogFragment(private val pendingChallenge: PendingChallengeModel, private val showOnlyInfo: Boolean = false) : DialogFragment() {
 
     private lateinit var tvChallengerName: TextView
     private lateinit var tvChallengeTitle: TextView
@@ -52,11 +52,9 @@ class PendingChallengeDialogFragment(private val pendingChallenge: PendingChalle
 
         // Get display name + avatar of challenge creator from firebase
         val isUserChallenger = viewModel.auth.currentUser!!.uid == pendingChallenge.uidChallenger
-        var opponentUid = pendingChallenge.uidChallenger
         var opponentName = pendingChallenge.nameChallenger
         var opponentPhotoUrl = pendingChallenge.photoUrlChallenger
         if (isUserChallenger) {
-            opponentUid = pendingChallenge.uidRecipient
             opponentName = pendingChallenge.nameRecipient
             opponentPhotoUrl = pendingChallenge.photoUrlRecipient
         }
@@ -75,15 +73,23 @@ class PendingChallengeDialogFragment(private val pendingChallenge: PendingChalle
         val statusText = "Status: ${pendingChallenge.status}"
         tvStatus.text = statusText
 
-        btnAccept.setOnClickListener {
-            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            try {
-                mediaPath = viewModel.createNewImageFile(requireContext())
-                val uri = FileProvider.getUriForFile(requireContext(), "com.example.picoff.provider", mediaPath!!)
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
-                launcher.launch(takePictureIntent)
-            } catch (e: ActivityNotFoundException) {
-                // display error state to the user
+        if (showOnlyInfo) {
+            btnAccept.visibility = View.INVISIBLE
+        } else {
+            btnAccept.setOnClickListener {
+                val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                try {
+                    mediaPath = viewModel.createNewImageFile(requireContext())
+                    val uri = FileProvider.getUriForFile(
+                        requireContext(),
+                        "com.example.picoff.provider",
+                        mediaPath!!
+                    )
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+                    launcher.launch(takePictureIntent)
+                } catch (e: ActivityNotFoundException) {
+                    // display error state to the user
+                }
             }
         }
 

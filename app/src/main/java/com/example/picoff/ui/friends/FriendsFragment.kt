@@ -117,7 +117,7 @@ class FriendsFragment : Fragment() {
                 if (isUserHimself) {
                     arrayListOf()
                 } else {
-                    val isAlreadyFriend: Boolean = mainViewModel.friends.value.contains(user)
+//                    val isAlreadyFriend: Boolean = mainViewModel.friends.value.contains(user)
                     color = ContextCompat.getColor(
                         requireContext(),
                         // if (isAlreadyFriend) R.color.already_friend else

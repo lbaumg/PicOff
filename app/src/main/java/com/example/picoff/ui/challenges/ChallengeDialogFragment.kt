@@ -18,10 +18,6 @@ import com.example.picoff.MainViewModel
 import com.example.picoff.R
 import com.example.picoff.models.ChallengeModel
 import com.example.picoff.models.PendingChallengeModel
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import java.io.File
 
 val REQUEST_IMAGE_CAPTURE = 100
@@ -51,20 +47,11 @@ class ChallengeDialogFragment(private val challengeModel: ChallengeModel) : Dial
 
         // Get display name + avatar of challenge creator from firebase
         // TODO get name and avatar from viewModel.users
-        val dbRefUsers = FirebaseDatabase.getInstance().reference.child("Users").child(challengeModel.creatorId)
-        dbRefUsers.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val displayName = snapshot.child("displayName").value.toString()
-                tvChallengeCreator.text = displayName
-                val imgUrl = snapshot.child("photoUrl").value.toString()
-                Glide.with(requireContext()).load(imgUrl).into(ivUserAvatar)
-                rootView.findViewById<LinearLayout>(R.id.layoutAvatar).visibility = View.VISIBLE
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                println("The read failed: " + error.code)
-            }
-        })
+        val creator = viewModel.users.value.first { it.uid == challengeModel.creatorId }
+        tvChallengeCreator.text = creator.displayName
+        Glide.with(requireContext()).load(creator.photoUrl).into(ivUserAvatar)
+        rootView.findViewById<LinearLayout>(R.id.layoutAvatar).visibility = View.VISIBLE
 
         tvChallengeDialogTitle = rootView.findViewById(R.id.tvChallengeDialogTitle)
         tvChallengeDialogTitle.text = challengeModel.challengeTitle
@@ -109,7 +96,8 @@ class ChallengeDialogFragment(private val challengeModel: ChallengeModel) : Dial
                     )
                     val dialog = DisplayCameraImageDialogFragment(
                         pendingChallenge = newChallenge,
-                        bitmap = bitmap
+                        bitmap = bitmap,
+                        responseMode = false
                     )
                     dialog.show(parentFragmentManager, "displayCameraImageDialog")
                 } else {

@@ -52,8 +52,8 @@ class CreateNewChallengeDialogFragment : DialogFragment() {
 
         // Observe status of challenge upload
         mainViewModel.statusUploadChallenge.observe(viewLifecycleOwner) { status ->
-            status?.let { status ->
-                if (status) {
+            status?.let {
+                if (it) {
                     Toast.makeText(context, "Challenge uploaded!", Toast.LENGTH_SHORT).show()
                     etChallengeTitle.text.clear()
                     etChallengeDesc.text.clear()
