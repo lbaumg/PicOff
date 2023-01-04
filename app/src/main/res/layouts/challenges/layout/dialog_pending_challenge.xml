@@ -7,7 +7,7 @@
 
 
     <TextView
-        android:id="@+id/tvChallengeDialogTitle"
+        android:id="@+id/tvDlgPendingChallengeTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -18,13 +18,13 @@
         android:text="Challenge title"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/tvChallengeDialogDesc"
-        app:layout_constraintEnd_toStartOf="@+id/layoutAvatar"
+        app:layout_constraintBottom_toTopOf="@+id/tvDlgPendingChallengeDesc"
+        app:layout_constraintEnd_toStartOf="@+id/lytAvatar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/layoutAvatar"
+        android:id="@+id/lytAvatar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -44,14 +44,14 @@
             tools:layout_editor_absoluteY="64dp">
 
             <ImageView
-                android:id="@+id/ivChallengeCreatorAvatar"
+                android:id="@+id/ivDlgPendingChallengeAvatar"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 tools:src="@tools:sample/avatars[10]" />
         </androidx.cardview.widget.CardView>
 
         <TextView
-            android:id="@+id/tvChallengeCreator"
+            android:id="@+id/tvDlgPendingChallengerName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -63,21 +63,33 @@
 
 
     <TextView
-        android:id="@+id/tvChallengeDialogDesc"
+        android:id="@+id/tvDlgPendingChallengeDesc"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
         android:text="Challenge description"
-        android:textAlignment="center"
+        android:textAlignment="textStart"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutAvatar" />
+        app:layout_constraintTop_toBottomOf="@+id/lytAvatar" />
+
+    <TextView
+        android:id="@+id/tvDlgPendingChallengeStatus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="2dp"
+        android:text="Status: sent"
+        android:textAlignment="center"
+        android:textSize="10sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDlgPendingChallengeTitle" />
 
     <Button
-        android:id="@+id/btnDialogCancel"
+        android:id="@+id/btnDlgPendingChallengeCancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -85,24 +97,24 @@
         android:backgroundTint="#FFA899"
         android:text="Cancel"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvChallengeDialogDesc" />
+        app:layout_constraintTop_toBottomOf="@+id/tvDlgPendingChallengeDesc" />
 
     <Button
-        android:id="@+id/btnDialogChallengeFriend"
+        android:id="@+id/btnDlgPendingChallengeAccept"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
         android:backgroundTint="#90C5FD"
-        android:text="friend"
+        android:text="Accept"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvChallengeDialogDesc" />
+        app:layout_constraintTop_toBottomOf="@+id/tvDlgPendingChallengeDesc" />
 
     <View
         android:layout_width="wrap_content"
         android:layout_height="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnDialogCancel" />
+        app:layout_constraintTop_toBottomOf="@+id/btnDlgPendingChallengeCancel" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

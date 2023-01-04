@@ -11,4 +11,9 @@
     <color name="already_friend">#FFFFFF</color>
     <color name="fab_color">#041135</color>
     <color name="fab_text_color">#FFFFFF</color>
+    <color name="item_sent">#FAF9ED</color>
+    <color name="item_open">#EAF0FD</color>
+    <color name="item_vote">#D9F8EA</color>
+    <color name="item_result">#C7E4BF</color>
+    <color name="vs_background">#FB0000</color>
 </resources>

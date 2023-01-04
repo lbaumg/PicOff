@@ -29,9 +29,9 @@ class PendingChallengeFragment : Fragment() {
     private lateinit var rvPendingChallenges: RecyclerView
     private lateinit var tvLoadingPendingChallenges: TextView
 
-    private val pendingChallengesAdapter = PendingChallengesAdapter()
+    private lateinit var pendingChallengesAdapter: PendingChallengesAdapter
 
-    private val mainViewModel: MainViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,30 +48,44 @@ class PendingChallengeFragment : Fragment() {
 
         tvLoadingPendingChallenges = root.findViewById(R.id.tvLoadingPendingChallenges)
 
+        pendingChallengesAdapter = PendingChallengesAdapter()
         rvPendingChallenges.adapter = pendingChallengesAdapter
 
         pendingChallengesAdapter.setOnItemClickListener(object :
             PendingChallengesAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
                 // TODO add on click handling
+                // TODO Accept challenge from friend and “PIC OFF”
+                // onClick -> open challenge description -> accept -> camera -> append text
+                // -> VOTING: picture challenger -> picture recipient -> VS -> halfscreen voting -> WINNER
+                // TODO Adapt colors of RV items
+                // TODO later on also implement RESULT and VOTE items
+                val pendingChallenge = pendingChallengesAdapter.getItemForPosition(position)
+                val dialog = PendingChallengeDialogFragment(pendingChallenge)
+                dialog.show(parentFragmentManager, "pendingChallengeDialog")
+
+
             }
         })
 
         // Observe mainViewModel.pendingChallengesList and update recycler view on change
         lifecycleScope.launch {
-            mainViewModel.pendingChallengesList.collect { pendingChallengesList ->
+            viewModel.pendingChallengesList.collect { pendingChallengesList ->
                 var challengesList = arrayListOf<PendingChallengeModel>()
-                if (mainViewModel.homeActiveFragment == ActiveFragment.RECEIVED ) {
+                val isActiveFragmentReceivedScreen = viewModel.homeActiveFragment == ActiveFragment.RECEIVED
+                val isActiveFragmentSentScreen = viewModel.homeActiveFragment == ActiveFragment.SENT
+                if ( isActiveFragmentReceivedScreen ) {
                     challengesList = pendingChallengesList.filter {
-                        it.uidRecipient ==  mainViewModel.auth.currentUser!!.uid && it.status != "open"
+                        it.uidRecipient ==  viewModel.auth.currentUser!!.uid
                     } as ArrayList<PendingChallengeModel>
-                } else if (mainViewModel.homeActiveFragment == ActiveFragment.SENT) {
+                } else if ( isActiveFragmentSentScreen ) {
+                    println("test")
                     challengesList = pendingChallengesList.filter {
-                        it.uidChallenger ==  mainViewModel.auth.currentUser!!.uid && it.status == "open"
+                        it.uidChallenger ==  viewModel.auth.currentUser!!.uid && it.status == "sent"
                     } as ArrayList<PendingChallengeModel>
                 }
 
-                pendingChallengesAdapter.updatePendingChallengeList(challengesList)
+                pendingChallengesAdapter.updatePendingChallengeList(challengesList, viewModel.homeActiveFragment)
                 rvPendingChallenges.visibility = View.VISIBLE
                 tvLoadingPendingChallenges.visibility = View.GONE
             }

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -12,8 +13,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.picoff.MainViewModel
 import com.example.picoff.R
 import com.example.picoff.adapters.FriendsAdapter
+import com.example.picoff.models.PendingChallengeModel
 
-class SelectFriendDialogFragment(val challengeTitle: String, val challengeDesc: String, val bitmap: Bitmap, val additionalInfo: String) : DialogFragment() {
+class SelectFriendDialogFragment(
+    val newPendingChallenge: PendingChallengeModel,
+    val bitmap: Bitmap
+) : DialogFragment() {
 
     private lateinit var rvSelectFriend: RecyclerView
 
@@ -37,31 +42,26 @@ class SelectFriendDialogFragment(val challengeTitle: String, val challengeDesc: 
         friendsAdapter.updateData(viewModel.friends.value)
         friendsAdapter.setOnItemClickListener(object : FriendsAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                val user = friendsAdapter.getItemForPosition(position)
+                val recipient = friendsAdapter.getItemForPosition(position)
+                newPendingChallenge.nameRecipient = recipient.displayName
+                newPendingChallenge.photoUrlRecipient = recipient.photoUrl
+                newPendingChallenge.uidRecipient = recipient.uid
                 viewModel.startNewChallenge(
-                    challengeTitle = challengeTitle,
-                    challengeDesc = challengeDesc,
-                    recipient = user,
+                    newPendingChallenge = newPendingChallenge,
                     bitmap = bitmap,
-                    additionalInfo = additionalInfo
                 )
-                dismiss()
             }
         })
 
+        viewModel.statusNewChallengeUploaded.observe(this) { status ->
+            status?.let {
+                Toast.makeText(
+                    context, if (it) "Successfully started challenge!" else "Error: challenge start failed", Toast.LENGTH_SHORT
+                ).show()
+            }
+            dismiss()
+        }
+
         return rootView
     }
-
-
-//    override fun onStart() {
-//        super.onStart()
-//        if (dialog != null) {
-//            val width = ViewGroup.LayoutParams.MATCH_PARENT;
-//            val height = ViewGroup.LayoutParams.MATCH_PARENT;
-//            dialog!!.window?.setLayout(width, height);
-//
-//        }
-//    }
-
-
 }

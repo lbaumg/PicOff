@@ -1,22 +1,33 @@
 package com.example.picoff
 
+import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
+import android.os.Environment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.picoff.models.ChallengeModel
 import com.example.picoff.models.PendingChallengeModel
 import com.example.picoff.models.UserModel
 import com.example.picoff.ui.home.ActiveFragment
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.UploadTask
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
+const val PREFIX_IMAGE_STORAGE_PATH = "challenges"
 
 class MainViewModel : ViewModel() {
 
@@ -25,6 +36,8 @@ class MainViewModel : ViewModel() {
     var homeActiveFragment = ActiveFragment.RECEIVED
 
     val isFabMenuOpen = MutableLiveData<Boolean?>()
+    val statusNewChallengeUploaded = MutableLiveData<Boolean?>()
+    val statusRespondedToChallenge = MutableLiveData<Boolean?>()
     val jumpToChallengeList = MutableLiveData<Boolean?>()
     val statusAddFriend = MutableLiveData<Boolean?>()
     val statusUploadChallenge = MutableLiveData<Boolean?>()
@@ -41,7 +54,7 @@ class MainViewModel : ViewModel() {
     private val _friends = MutableStateFlow<ArrayList<UserModel>>(arrayListOf())
     val friends = _friends.asStateFlow()
 
-
+    private var storageRef = FirebaseStorage.getInstance().getReferenceFromUrl("gs://picoff-5abdb.appspot.com/")
     private var dbRef = FirebaseDatabase.getInstance().reference
     private var dbRefChallenges = dbRef.child("Challenges")
     private var dbRefPendingChallenges = dbRef.child("Pending Challenges")
@@ -51,9 +64,8 @@ class MainViewModel : ViewModel() {
     val auth = FirebaseAuth.getInstance()
 
     init {
-        getChallengesData()
-        getPendingChallengesData()
         getUsers()
+        getChallengesData()
     }
 
     private fun getFriends() {
@@ -102,6 +114,7 @@ class MainViewModel : ViewModel() {
 
                 // Wait for users to be loaded -> then load friends
                 getFriends()
+                getPendingChallengesData()
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -135,32 +148,20 @@ class MainViewModel : ViewModel() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
                     val tempList = arrayListOf<PendingChallengeModel>()
+
                     for (challengeSnap in snapshot.children) {
                         val challengeData =
                             challengeSnap.getValue(PendingChallengeModel::class.java)
 
-                        // Load challenger and recipient user data from firebase and store into challengeData
+                        // Load challenger and recipient user data from users and store into challengeData
                         if (challengeData?.uidChallenger != null && challengeData.uidRecipient != null) {
-                            val taskList = mutableListOf<Task<DataSnapshot>>(
-                                dbRefUsers.child(challengeData.uidChallenger).get(),
-                                dbRefUsers.child(challengeData.uidChallenger).get()
-                            )
+                            val challenger = users.value.first { it.uid == challengeData.uidChallenger }
+                            val recipient = users.value.first { it.uid == challengeData.uidRecipient }
 
-                            val resultTask = Tasks.whenAll(taskList)
-                            resultTask.addOnCompleteListener {
-                                for ((i, task) in taskList.withIndex()) {
-                                    val user = task.result.getValue(UserModel::class.java)
-                                    if (user != null) {
-                                        if (i == 0) {
-                                            challengeData.nameChallenger = user.displayName
-                                            challengeData.photoUrlChallenger = user.photoUrl
-                                        } else {
-                                            challengeData.nameRecipient = user.displayName
-                                            challengeData.photoUrlRecipient = user.photoUrl
-                                        }
-                                    }
-                                }
-                            }
+                            challengeData.nameChallenger = challenger.displayName
+                            challengeData.photoUrlChallenger = challenger.photoUrl
+                            challengeData.nameRecipient = recipient.displayName
+                            challengeData.photoUrlRecipient = recipient.photoUrl
                         }
                         tempList.add(challengeData!!)
                     }
@@ -169,9 +170,7 @@ class MainViewModel : ViewModel() {
                 }
             }
 
-            override fun onCancelled(error: DatabaseError) {
-
-            }
+            override fun onCancelled(error: DatabaseError) {}
 
         })
     }
@@ -190,20 +189,125 @@ class MainViewModel : ViewModel() {
             }
     }
 
-    fun startNewChallenge(challengeTitle: String, challengeDesc: String, recipient: UserModel, bitmap: Bitmap, additionalInfo: String) {
+    fun startNewChallenge(
+        newPendingChallenge: PendingChallengeModel,
+        bitmap: Bitmap,
+    ) {
         if (auth.currentUser != null) {
             val challengeId = dbRefPendingChallenges.push().key!!
-            val newChallenge = PendingChallengeModel(
-                challengeId = challengeId,
-                challengeTitle = challengeTitle,
-                challengeDesc = challengeDesc,
-                uidChallenger = auth.currentUser!!.uid,
-                uidRecipient = recipient.uid,
-                additionalInfoChallenger = additionalInfo,
-                status = "sent"
-            )
-            dbRefPendingChallenges.child(challengeId).setValue(newChallenge)
-            // TODO store image in firebase cloud storage
+
+            val imagePath = "${PREFIX_IMAGE_STORAGE_PATH}/${challengeId}-${auth.currentUser!!.uid}.jpg"
+            val imageRef = storageRef.child(imagePath)
+
+            val baos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            val data: ByteArray = baos.toByteArray()
+
+            val uploadTask: UploadTask = imageRef.putBytes(data)
+            uploadTask.continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    task.exception?.let {
+                        statusNewChallengeUploaded.value = false
+                    }
+                }
+                imageRef.downloadUrl
+            }.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val challengeImageChallenger = task.result
+                    newPendingChallenge.challengeId = challengeId
+                    newPendingChallenge.challengeImageUrlChallenger = challengeImageChallenger.toString()
+                    dbRefPendingChallenges.child(challengeId).setValue(newPendingChallenge)
+                    statusNewChallengeUploaded.value = true
+                } else {
+                    // handle failure
+                    statusNewChallengeUploaded.value = false
+                }
+            }
         }
     }
+
+    fun respondToChallengeAndVote(pendingChallenge: PendingChallengeModel, bitmap: Bitmap) {
+        if (auth.currentUser != null) {
+            val imagePath = "${PREFIX_IMAGE_STORAGE_PATH}/${pendingChallenge.challengeId}-${pendingChallenge.uidRecipient}.jpg"
+            val imageRef = storageRef.child(imagePath)
+
+            val baos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            val data: ByteArray = baos.toByteArray()
+
+            val uploadTask: UploadTask = imageRef.putBytes(data)
+            uploadTask.continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    task.exception?.let {
+                        statusRespondedToChallenge.value = false
+                    }
+                }
+                imageRef.downloadUrl
+            }.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val challengeImageRecipientUrl = task.result
+                    pendingChallenge.challengeImageUrlRecipient = challengeImageRecipientUrl.toString()
+                    pendingChallenge.status = "vote"
+                    dbRefPendingChallenges.child(pendingChallenge.challengeId!!).setValue(pendingChallenge)
+                    statusRespondedToChallenge.value = true
+                } else {
+                    // handle failure
+                    statusRespondedToChallenge.value = false
+                }
+            }
+        }
+    }
+
+    fun updatePendingChallengeInFirebase(pendingChallenge: PendingChallengeModel) {
+        if (pendingChallenge.challengeId != null) {
+            dbRefPendingChallenges.child(pendingChallenge.challengeId!!).setValue(pendingChallenge)
+        }
+    }
+
+    @Throws(IOException::class)
+    fun createNewImageFile(context: Context): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        ).apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            absolutePath
+        }
+    }
+
+    fun getBitmapFromMediaPath(mediaPath: File): Bitmap {
+        val myBitmap = BitmapFactory.decodeFile(mediaPath.absolutePath)
+        val height = myBitmap.height * 512 / myBitmap.width
+        val scale = Bitmap.createScaledBitmap(myBitmap, 512, height, true)
+        var rotate = 0F
+        try {
+            val exif = ExifInterface(mediaPath.absolutePath)
+
+            val orientation: Int = exif.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_UNDEFINED
+            )
+            when (orientation) {
+                ExifInterface.ORIENTATION_NORMAL -> rotate = 0F
+                ExifInterface.ORIENTATION_ROTATE_270 -> rotate = 270F
+                ExifInterface.ORIENTATION_ROTATE_180 -> rotate = 180F
+                ExifInterface.ORIENTATION_ROTATE_90 -> rotate = 90F
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        val matrix = Matrix()
+        matrix.postRotate(rotate)
+        return Bitmap.createBitmap(
+            scale, 0, 0, scale.width,
+            scale.height, matrix, true
+        )
+    }
+
+
 }

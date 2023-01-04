@@ -130,6 +130,11 @@ class HomeFragment : Fragment() {
         binding.fabListChallenges.isClickable = false
     }
 
+    override fun onPause() {
+        super.onPause()
+        viewModel.homeActiveFragment = ActiveFragment.RECEIVED
+    }
+
     override fun onDestroyView() {
         viewModel.isFabMenuOpen.value = null
         super.onDestroyView()
