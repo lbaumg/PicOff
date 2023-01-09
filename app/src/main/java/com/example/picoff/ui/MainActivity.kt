@@ -1,18 +1,18 @@
 package com.example.picoff.ui
 
-import android.content.BroadcastReceiver
 import android.content.Intent
-import android.content.IntentFilter
+import android.net.ConnectivityManager
+import android.net.ConnectivityManager.NetworkCallback
+import android.net.Network
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.picoff.R
 import com.example.picoff.databinding.ActivityMainBinding
-import com.example.picoff.receivers.MyBroadcastReceiver
 import com.example.picoff.viewmodels.MainViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -32,7 +32,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
 
     private val viewModel: MainViewModel by viewModels()
-    private val br: BroadcastReceiver = MyBroadcastReceiver()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,12 +64,28 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        val filter = IntentFilter()
-        val receiverFlags = ContextCompat.RECEIVER_EXPORTED // listen to broadcast from system
-        ContextCompat.registerReceiver(this, br, filter, receiverFlags)
+
+        listenForInternetConnectivity()
+    }
 
 
+    private val networkCallback: NetworkCallback = object : NetworkCallback() {
+        override fun onAvailable(network: Network) {
+            println("Internet Available")
+        }
+        override fun onLost(network: Network) {
+            Toast.makeText(baseContext, "Device is offline", Toast.LENGTH_SHORT).show()
+        }
+    }
 
+    private fun listenForInternetConnectivity() {
+        val connectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        connectivityManager.registerDefaultNetworkCallback(networkCallback)
+    }
+
+    private fun unregisterListenerForInternetConnectivity() {
+        val connectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        connectivityManager.unregisterNetworkCallback(networkCallback)
     }
 
     override fun onResume() {
@@ -87,6 +102,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterListenerForInternetConnectivity()
+    }
 
 
 }

@@ -79,6 +79,7 @@ class MainViewModel : ViewModel() {
         initialize()
     }
 
+
     fun initialize() {
         getUsers()
         getChallengesData()
