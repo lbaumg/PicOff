@@ -51,8 +51,8 @@ class FriendsFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
 
         // Set user name and avatar
-        binding.tvAccountName.text = auth.currentUser!!.displayName
-        val imgUrl = auth.currentUser!!.photoUrl.toString()
+        binding.tvAccountName.text = auth.currentUser?.displayName
+        val imgUrl = auth.currentUser?.photoUrl.toString()
         Glide.with(this).load(imgUrl).into(binding.ivUserAvatar)
 
         binding.btnLogOut.setOnClickListener {
@@ -110,31 +110,47 @@ class FriendsFragment : Fragment() {
 
         binding.ibSearchButton.setOnClickListener {
             val name = binding.etSearchFriend.text.toString()
-            var color = Color.WHITE
-            val userList: ArrayList<UserModel> = try {
-                val user = mainViewModel.users.value.first { it.displayName == name }
-                val isUserHimself = user.uid == auth.currentUser?.uid
-                if (isUserHimself) {
-                    arrayListOf()
-                } else {
-//                    val isAlreadyFriend: Boolean = mainViewModel.friends.value.contains(user)
-                    color = ContextCompat.getColor(
-                        requireContext(),
-                        // if (isAlreadyFriend) R.color.already_friend else
-                        R.color.search_friend
-                    )
-                    arrayListOf(user)
-                }
-            } catch (exc: NoSuchElementException) {
-                arrayListOf()
-            }
-            friendsAdapter.updateData(userList, color, true)
+            searchForUser(name)
+        }
 
+
+        binding.btnInviteFriend.setOnClickListener {
+            val sendIntent = Intent()
+            sendIntent.action = Intent.ACTION_SEND
+            sendIntent.putExtra(Intent.EXTRA_TEXT, auth.currentUser!!.displayName)
+            sendIntent.type = "text/plain"
+            startActivity(sendIntent)
+        }
+
+        if (mainViewModel.sharedUserName.value != null) {
+            binding.etSearchFriend.setText(mainViewModel.sharedUserName.value)
+            searchForUser(mainViewModel.sharedUserName.value!!)
+
+            mainViewModel.sharedUserName.value = null
         }
 
         return root
     }
 
+    private fun searchForUser(name: String) {
+        var color = Color.WHITE
+        val userList: ArrayList<UserModel> = try {
+            val user = mainViewModel.users.value.first { it.displayName == name }
+            val isUserHimself = user.uid == auth.currentUser?.uid
+            if (isUserHimself) {
+                arrayListOf()
+            } else {
+                color = ContextCompat.getColor(
+                    requireContext(),
+                    R.color.search_friend
+                )
+                arrayListOf(user)
+            }
+        } catch (exc: NoSuchElementException) {
+            arrayListOf()
+        }
+        friendsAdapter.updateData(userList, color, true)
+    }
 
     override fun onPause() {
         super.onPause()

@@ -43,6 +43,7 @@ class MainViewModel : ViewModel() {
     val pendingChallengesLoaded: LiveData<Boolean>
         get() = _pendingChallengesLoaded
 
+    val sharedUserName = MutableLiveData<String?>()
     val isFabMenuOpen = MutableLiveData<Boolean?>()
     val statusNewChallengeUploaded = MutableLiveData<Boolean?>()
     val statusRespondedToChallenge = MutableLiveData<Boolean?>()
@@ -83,6 +84,7 @@ class MainViewModel : ViewModel() {
     fun initialize() {
         getUsers()
         getChallengesData()
+        registerChallengeArrivedNotification()
     }
 
     fun showBottomNav() {
@@ -91,6 +93,10 @@ class MainViewModel : ViewModel() {
 
     fun hideBottomNav() {
         _bottomNavigationVisibility.value = View.GONE
+    }
+
+    private fun registerChallengeArrivedNotification() {
+
     }
 
     private fun getFriends() {
@@ -186,7 +192,6 @@ class MainViewModel : ViewModel() {
                         if (isUserRecipient && challengeData?.status == "sent") {
                             challengeData.status = "open"
                         }
-                        println("CHALLENGE:" + challengeData?.status + " " + challengeData?.challengeTitle + " " + challengeData?.nameChallenger + " "+ challengeData?.nameRecipient)
                         tempList.add(challengeData!!)
                     }
 

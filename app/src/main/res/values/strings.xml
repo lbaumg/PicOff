@@ -26,4 +26,8 @@
     <string name="string_create_new_challenge_title">Create new challenge</string>
     <string name="hint_additional_info">Write some additional information, e.g. how many push ups you did</string>
     <string name="tv_select_friend_title">Select friend to challenge</string>
+    <string name="reminders_notification_channel_id">REMINDER_NOTIFICATION_CHANNEL_ID</string>
+    <string name="title_notification_reminder">PIC OFF misses you!</string>
+    <string name="description_notification_reminder">Start a new challenge with your friends!</string>
+    <string name="reminders_notification_channel_name">REMINDERS_NOTIFICATION_CHANNEL</string>
 </resources>

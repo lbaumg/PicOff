@@ -1,31 +1,34 @@
 package com.example.picoff.ui
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.picoff.R
 import com.example.picoff.databinding.ActivityMainBinding
+import com.example.picoff.receivers.RemindersManager
 import com.example.picoff.viewmodels.MainViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 
-// TODO Permission handling: ask for camera and storage
-// TODO Notificate user when new challenge is coming
-// TODO intent to add friend (if intent is detected, navigate to friends screen with name in searchtext)
-// TODO detect if offline
-// TODO result show for both
-// TODO Sign in activity as fragment
-
 
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+        const val ASK_MULTIPLE_PERMISSION_REQUEST_CODE = 100
+    }
 
     private lateinit var binding: ActivityMainBinding
 
@@ -36,6 +39,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+//        StrictMode.enableDefaults()
+
+        val deniedPermissions = checkPermissions()
+        if (deniedPermissions.isNotEmpty()) {
+            requestDeniedPermissions(deniedPermissions)
+        }
+
         checkIfLoggedInWithGoogle()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -44,15 +54,6 @@ class MainActivity : AppCompatActivity() {
         val navView: BottomNavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         navView.setupWithNavController(navController)
-
-//        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-//            override fun handleOnBackPressed() {
-//                if (viewModel.isFabMenuOpen.value == true)
-//                    viewModel.isFabMenuOpen.value = false
-//                else
-//                    finish()
-//            }
-//        })
 
         viewModel.jumpToChallengeList.observe(this) {
             binding.navView.selectedItemId = R.id.navigation_challenges
@@ -64,10 +65,51 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        createNotificationsChannels()
+        RemindersManager.startReminder(this)
 
         listenForInternetConnectivity()
     }
 
+
+    private fun createNotificationsChannels() {
+        val channel = NotificationChannel(
+            getString(R.string.reminders_notification_channel_id),
+            getString(R.string.reminders_notification_channel_name),
+            NotificationManager.IMPORTANCE_HIGH
+        )
+        ContextCompat.getSystemService(this, NotificationManager::class.java)
+            ?.createNotificationChannel(channel)
+    }
+
+
+    // Return an array of the denied permissions
+    fun checkPermissions() : ArrayList<String>{
+        val permissions = arrayListOf<String>(
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.READ_EXTERNAL_STORAGE,
+            android.Manifest.permission.RECEIVE_BOOT_COMPLETED
+        )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            permissions.add(
+                android.Manifest.permission.SCHEDULE_EXACT_ALARM
+            )
+        }
+
+        val deniedPermissions = arrayListOf<String>()
+
+        for (permission in permissions) {
+            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                deniedPermissions.add(permission)
+            }
+        }
+        return deniedPermissions
+    }
+
+    private fun requestDeniedPermissions(deniedPermissions: ArrayList<String>)  {
+        requestPermissions(deniedPermissions.toTypedArray(), ASK_MULTIPLE_PERMISSION_REQUEST_CODE)
+    }
 
     private val networkCallback: NetworkCallback = object : NetworkCallback() {
         override fun onAvailable(network: Network) {
@@ -91,12 +133,19 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.initialize()
+
+        if (intent?.type == "text/plain") {
+            val data = intent?.extras?.getString(Intent.EXTRA_TEXT)?.substringAfter("\"")?.substringBefore("\"")
+            viewModel.sharedUserName.value = data
+            binding.navView.selectedItemId = R.id.navigation_friends
+        }
     }
 
     private fun checkIfLoggedInWithGoogle() {
         auth = FirebaseAuth.getInstance()
         // If not signed in open SignInActivity
         if (auth.currentUser == null) {
+
             val intent = Intent(this, SignInActivity::class.java)
             startActivity(intent)
         }

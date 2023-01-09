@@ -18,6 +18,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.example.picoff.R
 import com.example.picoff.models.PendingChallengeModel
+import com.example.picoff.ui.MainActivity
 import com.example.picoff.viewmodels.MainViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -62,14 +63,23 @@ class CreateNewChallengeDialogFragment(private val withoutUpload: Boolean = fals
                 updateChallengeTitle()
                 updateChallengeDescription()
                 if (challengeTitle != null && challengeDesc != null) {
-                    val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                    try {
-                        mediaPath = viewModel.createNewImageFile(requireContext())
-                        val uri = FileProvider.getUriForFile(requireContext(), "com.example.picoff.provider", mediaPath!!)
-                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
-                        launcher.launch(takePictureIntent)
-                    } catch (e: ActivityNotFoundException) {
-                        // display error state to the user
+                    if ((activity as MainActivity).checkPermissions().isEmpty()) {
+                        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                        try {
+                            mediaPath = viewModel.createNewImageFile(requireContext())
+                            val uri = FileProvider.getUriForFile(
+                                requireContext(),
+                                "com.example.picoff.provider",
+                                mediaPath!!
+                            )
+                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+                            launcher.launch(takePictureIntent)
+                        } catch (e: ActivityNotFoundException) {
+                            // display error state to the user
+                        }
+                    } else {
+                        Toast.makeText(context, "Permission not granted! Please grant permissions in settings!", Toast.LENGTH_SHORT).show()
+                        dismiss()
                     }
                 }
 

@@ -16,6 +16,7 @@ import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.example.picoff.R
 import com.example.picoff.models.PendingChallengeModel
+import com.example.picoff.ui.MainActivity
 import com.example.picoff.ui.challenges.DisplayCameraImageDialogFragment
 import com.example.picoff.viewmodels.MainViewModel
 import java.io.File
@@ -79,14 +80,19 @@ class PendingChallengeDialogFragment(private val pendingChallenge: PendingChalle
             btnAccept.setOnClickListener {
                 val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 try {
-                    mediaPath = viewModel.createNewImageFile(requireContext())
-                    val uri = FileProvider.getUriForFile(
-                        requireContext(),
-                        "com.example.picoff.provider",
-                        mediaPath!!
-                    )
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
-                    launcher.launch(takePictureIntent)
+                    if ((activity as MainActivity).checkPermissions().isEmpty()) {
+                        mediaPath = viewModel.createNewImageFile(requireContext())
+                        val uri = FileProvider.getUriForFile(
+                            requireContext(),
+                            "com.example.picoff.provider",
+                            mediaPath!!
+                        )
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+                        launcher.launch(takePictureIntent)
+                    } else {
+                        Toast.makeText(context, "Permission not granted! Please grant permissions in settings!", Toast.LENGTH_SHORT).show()
+                        dismiss()
+                    }
                 } catch (e: ActivityNotFoundException) {
                     // display error state to the user
                 }
