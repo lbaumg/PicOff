@@ -1,4 +1,4 @@
-package com.example.picoff
+package com.example.picoff.viewmodels
 
 import android.content.Context
 import android.graphics.Bitmap

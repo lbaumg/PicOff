@@ -13,12 +13,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.picoff.MainViewModel
 import com.example.picoff.R
 import com.example.picoff.adapters.FriendsAdapter
 import com.example.picoff.databinding.FragmentFriendsBinding
 import com.example.picoff.models.UserModel
 import com.example.picoff.ui.SignInActivity
+import com.example.picoff.viewmodels.MainViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -103,8 +103,7 @@ class FriendsFragment : Fragment() {
                         mainViewModel.addFriend(user)
                     }
                 } else {
-                    val dialog = FriendsStatsDialogFragment()
-                    dialog.show(parentFragmentManager, "friendsStatsDialog")
+                    // Show friends stats
                 }
             }
         })

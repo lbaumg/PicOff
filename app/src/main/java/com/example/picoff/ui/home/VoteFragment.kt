@@ -11,9 +11,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
-import com.example.picoff.MainViewModel
 import com.example.picoff.databinding.FragmentVoteBinding
 import com.example.picoff.models.PendingChallengeModel
+import com.example.picoff.viewmodels.MainViewModel
 
 class VoteFragment : Fragment() {
 

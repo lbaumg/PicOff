@@ -12,10 +12,10 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.example.picoff.MainViewModel
 import com.example.picoff.R
 import com.example.picoff.models.PendingChallengeModel
 import com.example.picoff.ui.home.HomeFragmentDirections
+import com.example.picoff.viewmodels.MainViewModel
 
 class DisplayCameraImageDialogFragment(
     private val pendingChallenge: PendingChallengeModel,

@@ -14,10 +14,10 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
-import com.example.picoff.MainViewModel
 import com.example.picoff.R
 import com.example.picoff.models.PendingChallengeModel
 import com.example.picoff.ui.challenges.DisplayCameraImageDialogFragment
+import com.example.picoff.viewmodels.MainViewModel
 import java.io.File
 
 

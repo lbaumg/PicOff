@@ -10,10 +10,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.picoff.MainViewModel
 import com.example.picoff.R
 import com.example.picoff.adapters.FriendsAdapter
 import com.example.picoff.models.PendingChallengeModel
+import com.example.picoff.viewmodels.MainViewModel
 
 class SelectFriendDialogFragment(
     val newPendingChallenge: PendingChallengeModel,

@@ -12,11 +12,11 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
-import com.example.picoff.MainViewModel
 import com.example.picoff.R
 import com.example.picoff.databinding.FragmentHomeBinding
 import com.example.picoff.ui.challenges.ChallengeDialogFragment
 import com.example.picoff.ui.challenges.CreateNewChallengeDialogFragment
+import com.example.picoff.viewmodels.MainViewModel
 
 class HomeFragment : Fragment() {
 

@@ -14,10 +14,10 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
-import com.example.picoff.MainViewModel
 import com.example.picoff.R
 import com.example.picoff.models.ChallengeModel
 import com.example.picoff.models.PendingChallengeModel
+import com.example.picoff.viewmodels.MainViewModel
 import java.io.File
 
 val REQUEST_IMAGE_CAPTURE = 100
@@ -65,6 +65,8 @@ class ChallengeDialogFragment(private val challengeModel: ChallengeModel) : Dial
 
         btnChallengeFriend = rootView.findViewById(R.id.btnDialogChallengeFriend)
         btnChallengeFriend.setOnClickListener {
+            // Check for camera permission
+
             val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             try {
                 mediaPath = viewModel.createNewImageFile(requireContext())

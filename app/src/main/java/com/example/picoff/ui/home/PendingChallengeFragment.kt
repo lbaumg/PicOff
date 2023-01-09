@@ -10,11 +10,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.picoff.MainViewModel
 import com.example.picoff.R
 import com.example.picoff.adapters.PendingChallengesAdapter
 import com.example.picoff.databinding.FragmentPendingChallengeBinding
 import com.example.picoff.models.PendingChallengeModel
+import com.example.picoff.viewmodels.MainViewModel
 
 
 class PendingChallengeFragment : Fragment() {
