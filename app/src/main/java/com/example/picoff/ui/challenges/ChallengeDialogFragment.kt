@@ -45,9 +45,7 @@ class ChallengeDialogFragment(private val challengeModel: ChallengeModel) : Dial
         tvChallengeCreator = rootView.findViewById(R.id.tvChallengeCreator)
         ivUserAvatar = rootView.findViewById(R.id.ivChallengeCreatorAvatar)
 
-        // Get display name + avatar of challenge creator from firebase
-        // TODO get name and avatar from viewModel.users
-
+        // Get display name + avatar of challenge creator from viewModel.users
         val creator = viewModel.users.value.first { it.uid == challengeModel.creatorId }
         tvChallengeCreator.text = creator.displayName
         Glide.with(requireContext()).load(creator.photoUrl).into(ivUserAvatar)

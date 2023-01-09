@@ -22,7 +22,7 @@ class WinnerFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: MainViewModel by activityViewModels()
-    val args: WinnerFragmentArgs by navArgs()
+    private val args: WinnerFragmentArgs by navArgs()
 
     private lateinit var pendingChallenge: PendingChallengeModel
 
@@ -36,25 +36,44 @@ class WinnerFragment : Fragment() {
 
         pendingChallenge = args.pendingChallenge
 
-        binding.ivWinnerVs1
 
         Glide.with(this).load(pendingChallenge.challengeImageUrlChallenger).centerCrop().into(binding.ivWinnerVs1)
         Glide.with(this).load(pendingChallenge.challengeImageUrlRecipient).centerCrop().into(binding.ivWinnerVs2)
+
+        binding.tvWinnerVs1.text = pendingChallenge.additionalInfoChallenger.toString()
+        binding.tvWinnerVs2.text = pendingChallenge.additionalInfoRecipient.toString()
+
         val isADraw = pendingChallenge.voteChallenger != pendingChallenge.voteRecipient
         if (isADraw) {
-            binding.tvWinnerScreenVs.text = "DRAW!"
             binding.layoutWinnerVsScreen.setOnClickListener {
-                setChallengeDone()
-                closeFragment()
+                binding.tvWinnerScreenVs.text = "DRAW!"
+                binding.layoutWinnerVsScreen.setOnClickListener {
+                    setChallengeDone()
+                    closeFragment()
+                }
             }
         } else {
-            val winnerImgUrl = if (pendingChallenge.voteChallenger == 1) pendingChallenge.challengeImageUrlChallenger else pendingChallenge.challengeImageUrlRecipient
-            Glide.with(this).load(winnerImgUrl).into(binding.ivImageWinner)
+            var winnerImgUrl: String?
+            var winnerAvatarUrl: String?
+            var winnerName: String?
+            if (pendingChallenge.voteChallenger == 1) {
+                winnerImgUrl = pendingChallenge.challengeImageUrlChallenger
+                winnerAvatarUrl = pendingChallenge.photoUrlChallenger
+                winnerName = pendingChallenge.nameChallenger
+            } else {
+                winnerImgUrl = pendingChallenge.challengeImageUrlRecipient
+                winnerAvatarUrl = pendingChallenge.photoUrlRecipient
+                winnerName = pendingChallenge.nameRecipient
+            }
+            Glide.with(this).load(winnerImgUrl!!).into(binding.ivImageWinner)
+            Glide.with(this).load(winnerAvatarUrl!!).into(binding.ivWinnerAvatar)
+            binding.tvWinnerName.text = winnerName
 
             binding.layoutWinnerVsScreen.setOnClickListener {
                 binding.layoutWinnerVsScreen.visibility = View.INVISIBLE
                 binding.layoutWinnerScreen.visibility = View.VISIBLE
             }
+
             binding.layoutWinnerScreen.setOnClickListener {
                 setChallengeDone()
                 closeFragment()

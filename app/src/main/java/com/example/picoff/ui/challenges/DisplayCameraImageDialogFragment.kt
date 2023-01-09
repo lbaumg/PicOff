@@ -1,7 +1,5 @@
 package com.example.picoff.ui.challenges
 
-import android.app.Activity
-import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,13 +9,13 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.example.picoff.MainViewModel
 import com.example.picoff.R
 import com.example.picoff.models.PendingChallengeModel
-import com.example.picoff.ui.home.VoteActivity
+import com.example.picoff.ui.home.HomeFragmentDirections
 
 class DisplayCameraImageDialogFragment(
     private val pendingChallenge: PendingChallengeModel,
@@ -71,10 +69,11 @@ class DisplayCameraImageDialogFragment(
                     Toast.makeText(
                         context, "Successfully responded to challenge!", Toast.LENGTH_SHORT
                     ).show()
-                    val intent = Intent(context, VoteActivity::class.java)
-                    intent.putExtra("urlImgChallenger", pendingChallenge.challengeImageUrlChallenger)
-                    intent.putExtra("urlImgRecipient", pendingChallenge.challengeImageUrlRecipient)
-                    voteRecipientLauncher.launch(intent)
+
+                    viewModel.hideBottomNav()
+                    val action = HomeFragmentDirections.actionNavigationHomeToVoteFragment(pendingChallenge)
+                    findNavController().navigate(action)
+                    dismiss()
                 } else {
                     Toast.makeText(
                         context, "Error: challenge response failed", Toast.LENGTH_SHORT
@@ -86,18 +85,6 @@ class DisplayCameraImageDialogFragment(
 
         return rootView
     }
-
-
-    private val voteRecipientLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val vote = result.data?.extras?.getInt("vote")
-                pendingChallenge.voteRecipient = vote
-                pendingChallenge.status = "voteChallenger"
-                viewModel.updatePendingChallengeInFirebase(pendingChallenge)
-            }
-            dismiss()
-        }
 
     override fun onStart() {
         super.onStart()

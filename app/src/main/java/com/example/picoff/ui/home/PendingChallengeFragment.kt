@@ -1,13 +1,10 @@
 package com.example.picoff.ui.home
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -32,8 +29,6 @@ class PendingChallengeFragment : Fragment() {
     private lateinit var tvLoadingPendingChallenges: TextView
 
     private lateinit var pendingChallengesAdapter: PendingChallengesAdapter
-
-    private var selectedPendingChallenge: PendingChallengeModel? = null
 
     private val viewModel: MainViewModel by activityViewModels()
 
@@ -77,11 +72,9 @@ class PendingChallengeFragment : Fragment() {
                     }
                     "voteRecipient", "voteChallenger" -> { // Jump to vote screen
                         if (viewModel.homeActiveFragment == ActiveFragment.RECEIVED) {
-                            val intent = Intent(context, VoteActivity::class.java)
-                            intent.putExtra("urlImgChallenger", pendingChallenge.challengeImageUrlChallenger)
-                            intent.putExtra("urlImgRecipient", pendingChallenge.challengeImageUrlRecipient)
-                            selectedPendingChallenge = pendingChallenge
-                            voteChallengerLauncher.launch(intent)
+                            viewModel.hideBottomNav()
+                            val action = HomeFragmentDirections.actionNavigationHomeToVoteFragment(pendingChallenge)
+                            findNavController().navigate(action)
                         } else {
                             openPendingChallengesInfo(pendingChallenge, true)
                         }
@@ -100,7 +93,6 @@ class PendingChallengeFragment : Fragment() {
         // Observe mainViewModel.pendingChallengesLoaded and update recycler view on change
         viewModel.pendingChallengesLoaded.observe(viewLifecycleOwner) { pChLoaded ->
             if (pChLoaded) {
-                println("PENDING CHALLENGES ADAPTER UPDATE")
                 var challengesList = listOf<PendingChallengeModel>()
                 val isActiveFragmentReceivedScreen = viewModel.homeActiveFragment == ActiveFragment.RECEIVED
                 val isActiveFragmentSentScreen = viewModel.homeActiveFragment == ActiveFragment.SENT
@@ -134,18 +126,6 @@ class PendingChallengeFragment : Fragment() {
 
         return root
     }
-
-    private val voteChallengerLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                if (selectedPendingChallenge != null) {
-                    val vote = result.data?.extras?.getInt("vote")
-                    selectedPendingChallenge!!.voteChallenger = vote
-                    selectedPendingChallenge!!.status = "result"
-                    viewModel.updatePendingChallengeInFirebase(selectedPendingChallenge!!)
-                }
-            }
-        }
 
     fun openPendingChallengesInfo(pCh: PendingChallengeModel, showOnlyInfo: Boolean) {
         val dialog = PendingChallengeDialogFragment(pCh, showOnlyInfo)

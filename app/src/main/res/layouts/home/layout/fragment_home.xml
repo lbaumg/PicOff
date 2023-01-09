@@ -77,18 +77,23 @@
         app:layout_constraintBottom_toTopOf="@+id/createNewLayout"
         app:layout_constraintRight_toRightOf="@+id/activity_home">
 
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            app:cardCornerRadius="5dp">
         <TextView
             android:id="@+id/randomChallengeLabelTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:elevation="2dp"
             android:fontFamily="sans-serif"
+            android:background="@color/fab_color"
+            android:textColor="@android:color/white"
             android:padding="5dip"
             android:text="@string/fap1_text"
-            android:textColor="@android:color/black"
             android:typeface="normal" />
-
+        </androidx.cardview.widget.CardView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabRandomChallenge"
@@ -116,18 +121,23 @@
         app:layout_constraintBottom_toTopOf="@+id/listChallengesLayout"
         app:layout_constraintRight_toRightOf="@+id/activity_home">
 
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            app:cardCornerRadius="5dp">
         <TextView
             android:id="@+id/createNewLabelTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-
             android:elevation="2dp"
             android:fontFamily="sans-serif"
             android:padding="5dip"
             android:text="@string/fab2_text"
-            android:textColor="@android:color/black"
+            android:background="@color/fab_color"
+            android:textColor="@android:color/white"
             android:typeface="normal" />
+        </androidx.cardview.widget.CardView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabCreateNew"
@@ -155,18 +165,23 @@
         app:layout_constraintBottom_toTopOf="@+id/fabBase"
         app:layout_constraintRight_toRightOf="@+id/activity_home">
 
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            app:cardCornerRadius="5dp">
         <TextView
             android:id="@+id/listChallengesLabelTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-
             android:elevation="2dp"
             android:fontFamily="sans-serif"
             android:padding="5dip"
             android:text="@string/fab3_text"
-            android:textColor="@android:color/black"
+            android:background="@color/fab_color"
+            android:textColor="@android:color/white"
             android:typeface="normal" />
+        </androidx.cardview.widget.CardView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabListChallenges"

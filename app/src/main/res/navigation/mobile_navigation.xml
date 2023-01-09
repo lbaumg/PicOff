@@ -14,6 +14,10 @@
             android:id="@+id/action_navigation_home_to_winnerFragment"
             app:destination="@id/winnerFragment"
             app:popUpTo="@id/navigation_home" />
+        <action
+            android:id="@+id/action_navigation_home_to_voteFragment"
+            app:destination="@id/voteFragment"
+            app:popUpTo="@id/navigation_home" />
     </fragment>
 
     <fragment
@@ -31,6 +35,14 @@
         android:id="@+id/winnerFragment"
         android:name="com.example.picoff.ui.home.WinnerFragment"
         android:label="WinnerFragment" >
+        <argument
+            android:name="pendingChallenge"
+            app:argType="com.example.picoff.models.PendingChallengeModel" />
+    </fragment>
+    <fragment
+        android:id="@+id/voteFragment"
+        android:name="com.example.picoff.ui.home.VoteFragment"
+        android:label="VoteFragment" >
         <argument
             android:name="pendingChallenge"
             app:argType="com.example.picoff.models.PendingChallengeModel" />

@@ -2,7 +2,6 @@ package com.example.picoff.ui
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -15,6 +14,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 
 // TODO Permission handling: ask for camera and storage
+// TODO Notificate user when new challenge is coming
+// TODO intent to add friend (if intent is detected, navigate to friends screen with name in searchtext)
+// TODO detect if offline
+// TODO result show for both
+
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -35,22 +40,23 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         navView.setupWithNavController(navController)
 
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                println("YEAH " +viewModel.isFabMenuOpen.value)
-                if (viewModel.isFabMenuOpen.value == true)
-                    viewModel.isFabMenuOpen.value = false
-                else
-                    finish()
-            }
-        })
+//        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+//            override fun handleOnBackPressed() {
+//                if (viewModel.isFabMenuOpen.value == true)
+//                    viewModel.isFabMenuOpen.value = false
+//                else
+//                    finish()
+//            }
+//        })
 
         viewModel.jumpToChallengeList.observe(this) {
             binding.navView.selectedItemId = R.id.navigation_challenges
         }
 
         viewModel.bottomNavigationVisibility.observe(this, Observer { navVisibility ->
-            navView.visibility = navVisibility
+            navVisibility?.let {
+                navView.visibility = it
+            }
         })
     }
 

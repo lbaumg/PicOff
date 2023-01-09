@@ -44,7 +44,7 @@ class ChallengesFragment : Fragment() {
         // Set onClickListener to new challenge create button
         btnNewChallenge = root.findViewById(R.id.buttonCreateNew)
         btnNewChallenge.setOnClickListener {
-            val dialog = CreateNewChallengeDialogFragment()
+            val dialog = CreateNewChallengeDialogFragment(false)
             dialog.show(parentFragmentManager, "createNewChallengeDialog")
         }
 

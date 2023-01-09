@@ -29,4 +29,6 @@
     <color name="vs_background">#FB0000</color>
     <color name="cardview_challenge_background">@color/blue_8</color>
     <color name="challenge_item_text">#FFFFFF</color>
+    <color name="background_cancel_button">#FDAEAE</color> // FFA899
+    <color name="background_accept_button">#A7D2FF</color> // 90C5FD
 </resources>

@@ -84,6 +84,7 @@ class FriendsFragment : Fragment() {
                 Toast.makeText(
                     context, "Add friend ${if (it) "successful" else " failed"}", Toast.LENGTH_SHORT
                 ).show()
+                mainViewModel.statusAddFriend.value = null
             }
         }
 

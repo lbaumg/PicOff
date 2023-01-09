@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="32dp"
-        android:backgroundTint="#88E6DD"
+        android:backgroundTint="@color/background_accept_button"
         android:text="Continue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

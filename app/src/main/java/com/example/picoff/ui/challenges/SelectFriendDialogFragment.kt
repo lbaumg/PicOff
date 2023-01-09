@@ -58,6 +58,7 @@ class SelectFriendDialogFragment(
                 Toast.makeText(
                     context, if (it) "Successfully started challenge!" else "Error: challenge start failed", Toast.LENGTH_SHORT
                 ).show()
+                viewModel.statusNewChallengeUploaded.value = null
             }
             dismiss()
         }

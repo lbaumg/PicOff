@@ -21,19 +21,51 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/ivWinnerVs1"
+
+            <RelativeLayout
+                android:id="@+id/rlWinnerVs1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1">
 
+                <ImageView
+                    android:id="@+id/ivWinnerVs1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="image of challenger" />
 
-            <ImageView
-                android:id="@+id/ivWinnerVs2"
+                <TextView
+                    android:id="@+id/tvWinnerVs1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rlWinnerVs2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:layout_constraintTop_toBottomOf="@+id/ivWinnerVs1"/>
+                app:layout_constraintTop_toBottomOf="@+id/rlWinnerVs1">
+
+                <ImageView
+                    android:id="@+id/ivWinnerVs2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="image of challenge recipient" />
+
+                <TextView
+                    android:id="@+id/tvWinnerVs2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
 
         </LinearLayout>
 
@@ -69,10 +101,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="invisible">
+
         <ImageView
             android:id="@+id/ivImageWinner"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:contentDescription="image of winner of challenge"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -82,14 +116,62 @@
             android:id="@+id/tvWinnerScreen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:layout_margin="10dp"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
             android:text="Winner winner\nchicken dinner"
             android:textAlignment="center"
             android:textColor="@color/vs_background"
-            android:textSize="50sp"
+            android:textSize="40sp"
             android:textStyle="bold" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvWinnerCard"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:elevation="0dp"
+                    app:cardCornerRadius="@dimen/avatarCornerRadius" >
+
+                    <ImageView
+                        android:id="@+id/ivWinnerAvatar"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        tools:src="@tools:sample/avatars" />
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/tvWinnerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="6dp"
+                    android:text="Name"
+                    android:textColor="@color/black"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

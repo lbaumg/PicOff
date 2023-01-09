@@ -15,6 +15,7 @@ import androidx.fragment.app.commit
 import com.example.picoff.MainViewModel
 import com.example.picoff.R
 import com.example.picoff.databinding.FragmentHomeBinding
+import com.example.picoff.ui.challenges.ChallengeDialogFragment
 import com.example.picoff.ui.challenges.CreateNewChallengeDialogFragment
 
 class HomeFragment : Fragment() {
@@ -53,19 +54,25 @@ class HomeFragment : Fragment() {
             viewModel.isFabMenuOpen.value = !(viewModel.isFabMenuOpen.value?:false)
         }
         binding.fabCreateNew.setOnClickListener {
-            val dialog = CreateNewChallengeDialogFragment()
+            val dialog = CreateNewChallengeDialogFragment(true)
             dialog.show(parentFragmentManager, "createNewChallengeDialog")
         }
         binding.fabListChallenges.setOnClickListener {
             viewModel.jumpToChallengeList.value = true
         }
+        binding.fabRandomChallenge.setOnClickListener {
+            val challenge = viewModel.challengeList.value.random()
+            val dialog = ChallengeDialogFragment(challenge)
+            dialog.show(parentFragmentManager, "challengeDialog")
+        }
 
-        viewModel.isFabMenuOpen.observe(viewLifecycleOwner) { isFabMenuOpen ->
-            if (isFabMenuOpen == null) return@observe
-            if (isFabMenuOpen)
-                expandFabMenu()
-            else
-                collapseFabMenu()
+        viewModel.isFabMenuOpen.observe(viewLifecycleOwner) {
+            it?.let { isFabMenuOpen ->
+                if (isFabMenuOpen)
+                    expandFabMenu()
+                else
+                    collapseFabMenu()
+            }
         }
 
 

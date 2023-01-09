@@ -7,7 +7,7 @@
     <string name="button_received">Received</string>
     <string name="button_sent">Sent</string>
     <string name="fap1_text">Random</string>
-    <string name="fab2_text">Create new</string>
+    <string name="fab2_text">Start new</string>
     <string name="fab3_text">List challenges</string>
     <string name="fab1_content_desc">Start with a random challenge</string>
     <string name="fab2_content_desc">Create a new challenge</string>

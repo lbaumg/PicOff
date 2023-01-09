@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/tvChallengeDialogTitle2"
+        android:id="@+id/tvCreateNewChallengeDialogTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -31,7 +31,7 @@
         android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvChallengeDialogTitle2" />
+        app:layout_constraintTop_toBottomOf="@+id/tvCreateNewChallengeDialogTitle" />
 
     <EditText
         android:id="@+id/etNewChallengeDescription"
@@ -56,7 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
-        android:backgroundTint="#FFA899"
+        android:backgroundTint="@color/background_cancel_button"
         android:text="Cancel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etNewChallengeDescription" />
@@ -66,7 +66,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
-        android:backgroundTint="#90C5FD"
+        android:backgroundTint="@color/background_accept_button"
         android:text="@string/buttonSave"
         app:layout_constraintBaseline_toBaselineOf="@+id/btnNewChallengeCancel"
         app:layout_constraintEnd_toEndOf="parent" />

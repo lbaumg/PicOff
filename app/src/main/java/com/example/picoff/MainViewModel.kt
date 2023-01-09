@@ -185,17 +185,6 @@ class MainViewModel : ViewModel() {
                         if (isUserRecipient && challengeData?.status == "sent") {
                             challengeData.status = "open"
                         }
-
-                        // Load challenger and recipient user data from users and store into challengeData
-//                        if (challengeData?.uidChallenger != null && challengeData.uidRecipient != null) {
-//                            val challenger = users.value.first { it.uid == challengeData.uidChallenger }
-//                            val recipient = users.value.first { it.uid == challengeData.uidRecipient }
-//
-//                            challengeData.nameChallenger = challenger.displayName
-//                            challengeData.photoUrlChallenger = challenger.photoUrl
-//                            challengeData.nameRecipient = recipient.displayName
-//                            challengeData.photoUrlRecipient = recipient.photoUrl
-//                        }
                         println("CHALLENGE:" + challengeData?.status + " " + challengeData?.challengeTitle + " " + challengeData?.nameChallenger + " "+ challengeData?.nameRecipient)
                         tempList.add(challengeData!!)
                     }
