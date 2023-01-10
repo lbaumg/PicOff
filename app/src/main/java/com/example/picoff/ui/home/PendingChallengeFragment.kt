@@ -15,6 +15,7 @@ import com.example.picoff.R
 import com.example.picoff.adapters.PendingChallengesAdapter
 import com.example.picoff.databinding.FragmentPendingChallengeBinding
 import com.example.picoff.models.PendingChallengeModel
+import com.example.picoff.ui.dialogs.PendingChallengeDialogFragment
 import com.example.picoff.viewmodels.MainViewModel
 
 

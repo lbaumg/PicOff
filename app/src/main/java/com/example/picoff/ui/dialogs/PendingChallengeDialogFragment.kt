@@ -1,4 +1,4 @@
-package com.example.picoff.ui.home
+package com.example.picoff.ui.dialogs
 
 import android.app.Activity
 import android.content.ActivityNotFoundException
@@ -18,7 +18,6 @@ import com.bumptech.glide.Glide
 import com.example.picoff.R
 import com.example.picoff.models.PendingChallengeModel
 import com.example.picoff.ui.MainActivity
-import com.example.picoff.ui.challenges.DisplayCameraImageDialogFragment
 import com.example.picoff.viewmodels.MainViewModel
 import java.io.File
 

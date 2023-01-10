@@ -1,4 +1,4 @@
-package com.example.picoff.ui.challenges
+package com.example.picoff.ui.dialogs
 
 import android.app.Activity
 import android.content.ActivityNotFoundException

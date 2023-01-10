@@ -7,12 +7,14 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.picoff.R
-import androidx.lifecycle.SavedStateViewModelFactory
 import com.example.picoff.adapters.ChallengesAdapter
 import com.example.picoff.databinding.FragmentChallengesBinding
+import com.example.picoff.ui.dialogs.ChallengeDialogFragment
+import com.example.picoff.ui.dialogs.CreateNewChallengeDialogFragment
 import com.example.picoff.viewmodels.MainViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 

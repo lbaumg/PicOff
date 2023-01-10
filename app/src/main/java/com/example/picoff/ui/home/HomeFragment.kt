@@ -2,7 +2,6 @@ package com.example.picoff.ui.home
 
 import android.graphics.Paint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,8 +15,8 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.SavedStateViewModelFactory
 import com.example.picoff.R
 import com.example.picoff.databinding.FragmentHomeBinding
-import com.example.picoff.ui.challenges.ChallengeDialogFragment
-import com.example.picoff.ui.challenges.CreateNewChallengeDialogFragment
+import com.example.picoff.ui.dialogs.ChallengeDialogFragment
+import com.example.picoff.ui.dialogs.CreateNewChallengeDialogFragment
 import com.example.picoff.viewmodels.MainViewModel
 
 class HomeFragment : Fragment() {
