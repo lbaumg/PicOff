@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.picoff.R
+import androidx.lifecycle.SavedStateViewModelFactory
 import com.example.picoff.adapters.ChallengesAdapter
 import com.example.picoff.databinding.FragmentChallengesBinding
 import com.example.picoff.viewmodels.MainViewModel
@@ -30,7 +31,9 @@ class ChallengesFragment : Fragment() {
 
     private val challengesAdapter = ChallengesAdapter()
 
-    private val mainViewModel: MainViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels {
+    SavedStateViewModelFactory(requireActivity().application, requireActivity())
+}
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,9 +61,9 @@ class ChallengesFragment : Fragment() {
 
 
         // Update the recycler view when the challenges are loaded
-        mainViewModel.challengesLoaded.observe(viewLifecycleOwner) {
+        viewModel.challengesLoaded.observe(viewLifecycleOwner) {
             if (it) {
-                challengesAdapter.updateChallengeList(mainViewModel.challengeList.value)
+                challengesAdapter.updateChallengeList(viewModel.challengeList.value)
 
                 // Hide loading screen and show recycler view
                 rvChallenges.visibility = View.VISIBLE

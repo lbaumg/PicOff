@@ -13,6 +13,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -35,7 +36,9 @@ class CreateNewChallengeDialogFragment(private val withoutUpload: Boolean = fals
     private lateinit var auth: FirebaseAuth
 
     private var mediaPath: File? = null
-    private val viewModel: MainViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels {
+    SavedStateViewModelFactory(requireActivity().application, requireActivity())
+}
 
     private var challengeTitle: String? = null
     private var challengeDesc: String? = null

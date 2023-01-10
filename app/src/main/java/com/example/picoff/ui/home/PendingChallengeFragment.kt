@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,7 +31,9 @@ class PendingChallengeFragment : Fragment() {
 
     private lateinit var pendingChallengesAdapter: PendingChallengesAdapter
 
-    private val viewModel: MainViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels {
+    SavedStateViewModelFactory(requireActivity().application, requireActivity())
+}
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,7 +74,7 @@ class PendingChallengeFragment : Fragment() {
                         openPendingChallengesInfo(pendingChallenge, false)
                     }
                     "voteRecipient", "voteChallenger" -> { // Jump to vote screen
-                        if (viewModel.homeActiveFragment == ActiveFragment.RECEIVED) {
+                        if (viewModel.homeActiveFragment.value == ActiveFragment.RECEIVED) {
                             viewModel.hideBottomNav()
                             val action = HomeFragmentDirections.actionNavigationHomeToVoteFragment(pendingChallenge)
                             findNavController().navigate(action)
@@ -90,12 +93,12 @@ class PendingChallengeFragment : Fragment() {
             }
         })
 
-        // Observe mainViewModel.pendingChallengesLoaded and update recycler view on change
+        // Observe viewModel.pendingChallengesLoaded and update recycler view on change
         viewModel.pendingChallengesLoaded.observe(viewLifecycleOwner) { pChLoaded ->
             if (pChLoaded) {
                 var challengesList = listOf<PendingChallengeModel>()
-                val isActiveFragmentReceivedScreen = viewModel.homeActiveFragment == ActiveFragment.RECEIVED
-                val isActiveFragmentSentScreen = viewModel.homeActiveFragment == ActiveFragment.SENT
+                val isActiveFragmentReceivedScreen = viewModel.homeActiveFragment.value == ActiveFragment.RECEIVED
+                val isActiveFragmentSentScreen = viewModel.homeActiveFragment.value == ActiveFragment.SENT
                 if (isActiveFragmentReceivedScreen) {
                     challengesList = viewModel.pendingChallengesList.value.filter { pCh ->
                         pCh.status != "done" && (
@@ -117,7 +120,7 @@ class PendingChallengeFragment : Fragment() {
                 val sortOrder = listOf("result", "voteRecipient", "voteChallenger", "open", "sent", "done")
                 val sortedChallengesList = challengesList.sortedBy { sortOrder.indexOf(it.status) }
 
-                pendingChallengesAdapter.updatePendingChallengeList(sortedChallengesList, viewModel.homeActiveFragment)
+                pendingChallengesAdapter.updatePendingChallengeList(sortedChallengesList, viewModel.homeActiveFragment.value!!)
                 rvPendingChallenges.visibility = View.VISIBLE
                 tvLoadingPendingChallenges.visibility = View.GONE
             }

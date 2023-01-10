@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
@@ -32,7 +33,9 @@ class VoteFragment : Fragment() {
     private lateinit var layoutImgRecipient: RelativeLayout
     private lateinit var layoutVsScreen: RelativeLayout
 
-    private val viewModel: MainViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels {
+    SavedStateViewModelFactory(requireActivity().application, requireActivity())
+}
     private val args: VoteFragmentArgs by navArgs()
 
     override fun onCreateView(

@@ -6,9 +6,11 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.media.ExifInterface
 import android.os.Environment
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.example.picoff.models.ChallengeModel
 import com.example.picoff.models.PendingChallengeModel
@@ -31,9 +33,14 @@ import java.util.*
 
 const val PREFIX_IMAGE_STORAGE_PATH = "challenges"
 
-class MainViewModel : ViewModel() {
+class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
 
-    var homeActiveFragment = ActiveFragment.RECEIVED
+    var homeActiveFragment = state.getLiveData<ActiveFragment>("homeActiveFragment", ActiveFragment.RECEIVED)
+    fun setHomeActiveFragment(activeFragment: ActiveFragment) {
+        homeActiveFragment.value = activeFragment
+    }
+
+    var friendsSearchQuery = state.getLiveData<String>("friendsSearchQuery", "")
 
     private val _challengesLoaded = MutableLiveData(false)
     val challengesLoaded: LiveData<Boolean>
@@ -44,7 +51,7 @@ class MainViewModel : ViewModel() {
         get() = _pendingChallengesLoaded
 
     val sharedUserName = MutableLiveData<String?>()
-    val isFabMenuOpen = MutableLiveData<Boolean?>()
+    val isFabMenuOpen = state.getLiveData<Boolean?>("isFabMenuOpen") //<Boolean?>()MutableLiveData<Boolean?>()
     val statusNewChallengeUploaded = MutableLiveData<Boolean?>()
     val statusRespondedToChallenge = MutableLiveData<Boolean?>()
     val jumpToChallengeList = MutableLiveData<Boolean?>()
@@ -84,7 +91,6 @@ class MainViewModel : ViewModel() {
     fun initialize() {
         getUsers()
         getChallengesData()
-        registerChallengeArrivedNotification()
     }
 
     fun showBottomNav() {
@@ -93,10 +99,6 @@ class MainViewModel : ViewModel() {
 
     fun hideBottomNav() {
         _bottomNavigationVisibility.value = View.GONE
-    }
-
-    private fun registerChallengeArrivedNotification() {
-
     }
 
     private fun getFriends() {
@@ -256,7 +258,7 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun respondToChallengeAndVote(pendingChallenge: PendingChallengeModel, bitmap: Bitmap) {
+    fun respondToChallenge(pendingChallenge: PendingChallengeModel, bitmap: Bitmap) {
         if (auth.currentUser != null) {
             val imagePath = "${PREFIX_IMAGE_STORAGE_PATH}/${pendingChallenge.challengeId}-${pendingChallenge.uidRecipient}.jpg"
             val imageRef = storageRef.child(imagePath)

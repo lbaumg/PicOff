@@ -13,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.SavedStateViewModelFactory
 import com.bumptech.glide.Glide
 import com.example.picoff.R
 import com.example.picoff.models.ChallengeModel
@@ -32,7 +33,9 @@ class ChallengeDialogFragment(private val challengeModel: ChallengeModel) : Dial
     private lateinit var btnCancel: Button
     private lateinit var btnChallengeFriend: Button
 
-    private val viewModel: MainViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels {
+    SavedStateViewModelFactory(requireActivity().application, requireActivity())
+}
 
     private var mediaPath: File? = null
 

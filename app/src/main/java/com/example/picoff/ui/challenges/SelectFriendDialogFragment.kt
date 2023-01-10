@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.picoff.R
+import androidx.lifecycle.SavedStateViewModelFactory
 import com.example.picoff.adapters.FriendsAdapter
 import com.example.picoff.models.PendingChallengeModel
 import com.example.picoff.viewmodels.MainViewModel
@@ -24,7 +25,9 @@ class SelectFriendDialogFragment(
 
     private var friendsAdapter = FriendsAdapter()
 
-    private val viewModel: MainViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels {
+    SavedStateViewModelFactory(requireActivity().application, requireActivity())
+}
 
     override fun onCreateView(
         inflater: LayoutInflater,

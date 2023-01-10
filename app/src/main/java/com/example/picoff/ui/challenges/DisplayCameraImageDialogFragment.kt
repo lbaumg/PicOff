@@ -13,6 +13,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.picoff.R
+import androidx.lifecycle.SavedStateViewModelFactory
 import com.example.picoff.models.PendingChallengeModel
 import com.example.picoff.ui.home.HomeFragmentDirections
 import com.example.picoff.viewmodels.MainViewModel
@@ -27,7 +28,9 @@ class DisplayCameraImageDialogFragment(
     private lateinit var etAdditionalInfo: EditText
     private lateinit var btnContinue: Button
 
-    private val viewModel: MainViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels {
+    SavedStateViewModelFactory(requireActivity().application, requireActivity())
+}
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,7 +50,7 @@ class DisplayCameraImageDialogFragment(
 
             if (responseMode) {
                 pendingChallenge.additionalInfoRecipient = additionalInfo
-                viewModel.respondToChallengeAndVote(
+                viewModel.respondToChallenge(
                     pendingChallenge = pendingChallenge,
                     bitmap = bitmap
                 )

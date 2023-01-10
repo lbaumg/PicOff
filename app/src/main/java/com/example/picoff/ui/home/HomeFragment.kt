@@ -2,6 +2,7 @@ package com.example.picoff.ui.home
 
 import android.graphics.Paint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
+import androidx.lifecycle.SavedStateViewModelFactory
 import com.example.picoff.R
 import com.example.picoff.databinding.FragmentHomeBinding
 import com.example.picoff.ui.challenges.ChallengeDialogFragment
@@ -29,7 +31,9 @@ class HomeFragment : Fragment() {
     private lateinit var btnSent: Button
     private lateinit var btnReceived: Button
 
-    private val viewModel: MainViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels {
+        SavedStateViewModelFactory(requireActivity().application, requireActivity())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -75,12 +79,16 @@ class HomeFragment : Fragment() {
             }
         }
 
+        // Restore previous active fragment
+        if (viewModel.homeActiveFragment.value == ActiveFragment.SENT) {
+            onButtonSentClicked(true)
+        }
 
         return view
     }
 
-    private fun onButtonSentClicked() {
-        if (viewModel.homeActiveFragment == ActiveFragment.RECEIVED) {
+    private fun onButtonSentClicked(force: Boolean = false) {
+        if (viewModel.homeActiveFragment.value == ActiveFragment.RECEIVED || force) {
             btnSent.paintFlags = btnSent.paintFlags or Paint.UNDERLINE_TEXT_FLAG
             btnReceived.paintFlags = btnReceived.paintFlags and Paint.UNDERLINE_TEXT_FLAG.inv()
 
@@ -90,12 +98,12 @@ class HomeFragment : Fragment() {
                 replace(R.id.fragmentContainerView, fragment)
                 addToBackStack(null)
             }
-            viewModel.homeActiveFragment = ActiveFragment.SENT
+            viewModel.setHomeActiveFragment(ActiveFragment.SENT)
         }
     }
 
     private fun onButtonReceivedClicked() {
-        if (viewModel.homeActiveFragment == ActiveFragment.SENT) {
+        if (viewModel.homeActiveFragment.value == ActiveFragment.SENT) {
             btnReceived.paintFlags = btnReceived.paintFlags or Paint.UNDERLINE_TEXT_FLAG
             btnSent.paintFlags = btnSent.paintFlags and Paint.UNDERLINE_TEXT_FLAG.inv()
 
@@ -105,7 +113,8 @@ class HomeFragment : Fragment() {
                 replace(R.id.fragmentContainerView, fragment)
                 addToBackStack(null)
             }
-            viewModel.homeActiveFragment = ActiveFragment.RECEIVED
+//            viewModel.homeActiveFragment = ActiveFragment.RECEIVED
+            viewModel.setHomeActiveFragment(ActiveFragment.RECEIVED)
         }
     }
 
@@ -144,7 +153,8 @@ class HomeFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        viewModel.homeActiveFragment = ActiveFragment.RECEIVED
+//        viewModel.homeActiveFragment = ActiveFragment.RECEIVED
+//        viewModel.setHomeActiveFragment1(ActiveFragment.RECEIVED)
     }
 
     override fun onDestroyView() {

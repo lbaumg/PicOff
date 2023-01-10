@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -37,7 +38,9 @@ class FriendsFragment : Fragment() {
     private lateinit var rvFriends: RecyclerView
     private val friendsAdapter = FriendsAdapter()
 
-    private val mainViewModel: MainViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels {
+    SavedStateViewModelFactory(requireActivity().application, requireActivity())
+}
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -79,28 +82,27 @@ class FriendsFragment : Fragment() {
         rvFriends.adapter = friendsAdapter
 
         // Observe status of add friend operation
-        mainViewModel.statusAddFriend.observe(viewLifecycleOwner) { status ->
+        viewModel.statusAddFriend.observe(viewLifecycleOwner) { status ->
             status?.let {
                 Toast.makeText(
                     context, "Add friend ${if (it) "successful" else " failed"}", Toast.LENGTH_SHORT
                 ).show()
-                mainViewModel.statusAddFriend.value = null
+                viewModel.statusAddFriend.value = null
             }
         }
 
         val friendsColor = ContextCompat.getColor(requireContext(), R.color.already_friend)
-        friendsAdapter.updateData(mainViewModel.friends.value, friendsColor)
+        friendsAdapter.updateData(viewModel.friends.value, friendsColor)
         friendsAdapter.setOnItemClickListener(object : FriendsAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
                 val user = friendsAdapter.getItemForPosition(position)
                 if (friendsAdapter.isInSearchMode) {
                     // Add friend
-                    // TODO at the moment one sided friend handling, request and confirm in the future?
-                    val isAlreadyFriend = mainViewModel.friends.value.contains(user)
+                    val isAlreadyFriend = viewModel.friends.value.contains(user)
                     if (isAlreadyFriend) {
                         Toast.makeText(context, "Already friends!", Toast.LENGTH_SHORT).show()
                     } else {
-                        mainViewModel.addFriend(user)
+                        viewModel.addFriend(user)
                     }
                 } else {
                     // Show friends stats
@@ -122,11 +124,15 @@ class FriendsFragment : Fragment() {
             startActivity(sendIntent)
         }
 
-        if (mainViewModel.sharedUserName.value != null) {
-            binding.etSearchFriend.setText(mainViewModel.sharedUserName.value)
-            searchForUser(mainViewModel.sharedUserName.value!!)
+        if (viewModel.sharedUserName.value != null) {
+            binding.etSearchFriend.setText(viewModel.sharedUserName.value)
+            viewModel.sharedUserName.value = null
+        } else {
+            binding.etSearchFriend.setText(viewModel.friendsSearchQuery.value)
+        }
 
-            mainViewModel.sharedUserName.value = null
+        if (binding.etSearchFriend.text.isNotBlank()) {
+            searchForUser(binding.etSearchFriend.text.toString())
         }
 
         return root
@@ -135,7 +141,7 @@ class FriendsFragment : Fragment() {
     private fun searchForUser(name: String) {
         var color = Color.WHITE
         val userList: ArrayList<UserModel> = try {
-            val user = mainViewModel.users.value.first { it.displayName == name }
+            val user = viewModel.users.value.first { it.displayName == name }
             val isUserHimself = user.uid == auth.currentUser?.uid
             if (isUserHimself) {
                 arrayListOf()
@@ -154,7 +160,8 @@ class FriendsFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        binding.etSearchFriend.text.clear()
+        viewModel.friendsSearchQuery.value = binding.etSearchFriend.text.toString()
+//        binding.etSearchFriend.text.clear()
         friendsAdapter.clearSearch()
     }
 

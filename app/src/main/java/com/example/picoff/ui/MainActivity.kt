@@ -14,6 +14,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.picoff.R
@@ -31,15 +32,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityMainBinding
-
+    private lateinit var navView: BottomNavigationView
     private lateinit var auth: FirebaseAuth
 
-    private val viewModel: MainViewModel by viewModels()
-
+    private val viewModel: MainViewModel by viewModels {
+        SavedStateViewModelFactory(application, this)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-//        StrictMode.enableDefaults()
 
         val deniedPermissions = checkPermissions()
         if (deniedPermissions.isNotEmpty()) {
@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val navView: BottomNavigationView = binding.navView
+        navView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         navView.setupWithNavController(navController)
 
@@ -137,7 +137,7 @@ class MainActivity : AppCompatActivity() {
         if (intent?.type == "text/plain") {
             val data = intent?.extras?.getString(Intent.EXTRA_TEXT)?.substringAfter("\"")?.substringBefore("\"")
             viewModel.sharedUserName.value = data
-            binding.navView.selectedItemId = R.id.navigation_friends
+            navView.selectedItemId = R.id.navigation_friends
         }
     }
 
