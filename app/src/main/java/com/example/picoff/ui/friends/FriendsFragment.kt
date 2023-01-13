@@ -39,8 +39,8 @@ class FriendsFragment : Fragment() {
     private val friendsAdapter = FriendsAdapter()
 
     private val viewModel: MainViewModel by activityViewModels {
-    SavedStateViewModelFactory(requireActivity().application, requireActivity())
-}
+        SavedStateViewModelFactory(requireActivity().application, requireActivity())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

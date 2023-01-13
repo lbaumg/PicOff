@@ -34,8 +34,8 @@ class ChallengesFragment : Fragment() {
     private val challengesAdapter = ChallengesAdapter()
 
     private val viewModel: MainViewModel by activityViewModels {
-    SavedStateViewModelFactory(requireActivity().application, requireActivity())
-}
+        SavedStateViewModelFactory(requireActivity().application, requireActivity())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

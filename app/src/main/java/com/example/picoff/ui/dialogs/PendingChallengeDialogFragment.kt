@@ -33,8 +33,8 @@ class PendingChallengeDialogFragment(private val pendingChallenge: PendingChalle
     private lateinit var btnAccept: Button
 
     private val viewModel: MainViewModel by activityViewModels {
-    SavedStateViewModelFactory(requireActivity().application, requireActivity())
-}
+        SavedStateViewModelFactory(requireActivity().application, requireActivity())
+    }
 
     private var mediaPath: File? = null
 

@@ -20,7 +20,6 @@ class PendingChallengesAdapter() :
 
     private var pendingChallengesList: List<PendingChallengeModel> = arrayListOf()
     private lateinit var mListener: OnItemClickListener
-    private lateinit var mListenerLongClick: OnItemLongClickListener
     private var activeFragment: ActiveFragment = ActiveFragment.RECEIVED
 
     private val auth = FirebaseAuth.getInstance()
@@ -29,16 +28,8 @@ class PendingChallengesAdapter() :
         fun onItemClick(position: Int)
     }
 
-    interface OnItemLongClickListener {
-        fun onItemLongClick(position: Int)
-    }
-
     fun setOnItemClickListener(clickListener: OnItemClickListener) {
         mListener = clickListener
-    }
-
-    fun setOnItemLongClickListener(longClickListener: OnItemLongClickListener) {
-        mListenerLongClick = longClickListener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -58,7 +49,7 @@ class PendingChallengesAdapter() :
         when (currentPendingChallenge.status) {
             "sent" -> color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_sent)
             "open" -> color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_open)
-            "vote", "voteRecipient", "voteChallenger" -> color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_vote)
+            "voteRecipient", "voteChallenger" -> color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_vote)
             "result" -> color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_result)
             "done" -> color = ContextCompat.getColor(holder.cvPendingChallengeItem.context, R.color.item_done)
         }

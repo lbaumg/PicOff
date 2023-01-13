@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.media.ExifInterface
 import android.os.Environment
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -33,7 +32,7 @@ import java.util.*
 
 const val PREFIX_IMAGE_STORAGE_PATH = "challenges"
 
-class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
+class MainViewModel(state: SavedStateHandle) : ViewModel() {
 
     var homeActiveFragment = state.getLiveData<ActiveFragment>("homeActiveFragment", ActiveFragment.RECEIVED)
     fun setHomeActiveFragment(activeFragment: ActiveFragment) {
@@ -65,8 +64,8 @@ class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
     private val _challengeList = MutableStateFlow<ArrayList<ChallengeModel>>(arrayListOf())
     val challengeList = _challengeList.asStateFlow()
 
-    private val _pendingChallengesList = MutableStateFlow<ArrayList<PendingChallengeModel>>(arrayListOf())
-    val pendingChallengesList = _pendingChallengesList.asStateFlow()
+    private val _pendingChallengeList = MutableStateFlow<ArrayList<PendingChallengeModel>>(arrayListOf())
+    val pendingChallengeList = _pendingChallengeList.asStateFlow()
 
     private val _users = MutableStateFlow<ArrayList<UserModel>>(arrayListOf())
     val users = _users.asStateFlow()
@@ -197,7 +196,7 @@ class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
                         tempList.add(challengeData!!)
                     }
 
-                    _pendingChallengesList.value = tempList
+                    _pendingChallengeList.value = tempList
                     _pendingChallengesLoaded.value = true
                 }
             }

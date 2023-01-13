@@ -54,14 +54,6 @@ class PendingChallengeFragment : Fragment() {
         pendingChallengesAdapter = PendingChallengesAdapter()
         rvPendingChallenges.adapter = pendingChallengesAdapter
 
-//        pendingChallengesAdapter.setOnItemLongClickListener(object :
-//        PendingChallengesAdapter.OnItemLongClickListener {
-//            override fun onItemLongClick(position: Int) {
-//                val pendingChallenge = pendingChallengesAdapter.getItemForPosition(position)
-//                val dialog = PendingChallengeDialogFragment(pendingChallenge, true)
-//                dialog.show(parentFragmentManager, "pendingChallengeDialog")
-//            }
-//        })
         pendingChallengesAdapter.setOnItemClickListener(object :
             PendingChallengesAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
@@ -101,7 +93,7 @@ class PendingChallengeFragment : Fragment() {
                 val isActiveFragmentReceivedScreen = viewModel.homeActiveFragment.value == ActiveFragment.RECEIVED
                 val isActiveFragmentSentScreen = viewModel.homeActiveFragment.value == ActiveFragment.SENT
                 if (isActiveFragmentReceivedScreen) {
-                    challengesList = viewModel.pendingChallengesList.value.filter { pCh ->
+                    challengesList = viewModel.pendingChallengeList.value.filter { pCh ->
                         pCh.status != "done" && (
                                 (pCh.uidRecipient == viewModel.auth.currentUser!!.uid && pCh.status == "open") // user is recipient and status is open
                                         || (pCh.uidRecipient == viewModel.auth.currentUser!!.uid && pCh.status == "voteRecipient") // user is recipient and status is vote1
@@ -110,7 +102,7 @@ class PendingChallengeFragment : Fragment() {
                                 )
                     }
                 } else if (isActiveFragmentSentScreen) {
-                    challengesList = viewModel.pendingChallengesList.value.filter { pCh ->
+                    challengesList = viewModel.pendingChallengeList.value.filter { pCh ->
                         (pCh.uidChallenger == viewModel.auth.currentUser!!.uid && pCh.status == "sent") // user is challenger and status is sent
                                 || (pCh.uidChallenger == viewModel.auth.currentUser!!.uid && pCh.status == "voteRecipient") // user is recipient and status is vote1
                                 || (pCh.uidRecipient == viewModel.auth.currentUser!!.uid && pCh.status == "voteChallenger") // user is recipient and status is vote1
