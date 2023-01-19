@@ -15,7 +15,7 @@ import com.example.picoff.models.PendingChallengeModel
 import com.example.picoff.ui.home.ActiveFragment
 import com.google.firebase.auth.FirebaseAuth
 
-class PendingChallengesAdapter() :
+class PendingChallengesAdapter :
     RecyclerView.Adapter<PendingChallengesAdapter.ViewHolder>() {
 
     private var pendingChallengesList: List<PendingChallengeModel> = arrayListOf()

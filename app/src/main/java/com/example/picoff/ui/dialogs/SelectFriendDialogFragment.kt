@@ -17,7 +17,7 @@ import com.example.picoff.adapters.FriendsAdapter
 import com.example.picoff.models.PendingChallengeModel
 import com.example.picoff.viewmodels.MainViewModel
 
-class SelectFriendDialogFragment() : DialogFragment() {
+class SelectFriendDialogFragment : DialogFragment() {
 
     companion object {
         private const val PENDING_CHALLENGE = "pendingChallenge"

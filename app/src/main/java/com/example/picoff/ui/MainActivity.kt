@@ -14,7 +14,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
@@ -43,7 +42,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         val deniedPermissions = checkPermissions()
         if (deniedPermissions.isNotEmpty()) {
@@ -65,11 +64,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.bottomNavigationVisibility.observe(this, Observer { navVisibility ->
+        viewModel.bottomNavigationVisibility.observe(this) { navVisibility ->
             navVisibility?.let {
                 navView.visibility = it
             }
-        })
+        }
 
         createNotificationsChannels()
         RemindersManager.startReminder(this)
@@ -91,7 +90,7 @@ class MainActivity : AppCompatActivity() {
 
     // Return an array of the denied permissions
     fun checkPermissions() : ArrayList<String>{
-        val permissions = arrayListOf<String>(
+        val permissions = arrayListOf(
             android.Manifest.permission.CAMERA,
             android.Manifest.permission.READ_EXTERNAL_STORAGE,
             android.Manifest.permission.RECEIVE_BOOT_COMPLETED

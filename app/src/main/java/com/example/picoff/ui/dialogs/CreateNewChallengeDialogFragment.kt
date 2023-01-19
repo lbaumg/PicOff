@@ -27,7 +27,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import java.io.File
 
-class CreateNewChallengeDialogFragment() : DialogFragment() {
+class CreateNewChallengeDialogFragment : DialogFragment() {
 
     companion object {
         private const val WITHOUT_UPLOAD = "withoutUpload"

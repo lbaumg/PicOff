@@ -20,7 +20,7 @@ import com.example.picoff.models.PendingChallengeModel
 import com.example.picoff.ui.home.HomeFragmentDirections
 import com.example.picoff.viewmodels.MainViewModel
 
-class DisplayCameraImageDialogFragment() : DialogFragment() {
+class DisplayCameraImageDialogFragment : DialogFragment() {
 
     companion object {
         private const val PENDING_CHALLENGE = "pendingChallenge"
@@ -120,9 +120,9 @@ class DisplayCameraImageDialogFragment() : DialogFragment() {
     override fun onStart() {
         super.onStart()
         if (dialog != null) {
-            val width = ViewGroup.LayoutParams.MATCH_PARENT;
-            val height = ViewGroup.LayoutParams.MATCH_PARENT;
-            dialog!!.window?.setLayout(width, height);
+            val width = ViewGroup.LayoutParams.MATCH_PARENT
+            val height = ViewGroup.LayoutParams.MATCH_PARENT
+            dialog!!.window?.setLayout(width, height)
 
         }
     }

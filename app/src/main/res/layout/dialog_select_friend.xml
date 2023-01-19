@@ -30,7 +30,7 @@
         android:layout_marginTop="32dp"
         android:text="@string/tv_select_friend_title"
         app:layout_constraintEnd_toEndOf="parent"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

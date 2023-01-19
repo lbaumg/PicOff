@@ -24,7 +24,7 @@ import com.example.picoff.ui.MainActivity
 import com.example.picoff.viewmodels.MainViewModel
 import java.io.File
 
-class ChallengeDialogFragment() : DialogFragment() {
+class ChallengeDialogFragment : DialogFragment() {
 
     companion object {
         private const val CHALLENGE = "challenge"

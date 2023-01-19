@@ -16,8 +16,7 @@ data class ChallengeModel(
         parcel.readString(),
         parcel.readString(),
         parcel.readInt()
-    ) {
-    }
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(challengeId)

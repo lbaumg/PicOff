@@ -39,7 +39,7 @@ class MainViewModel(state: SavedStateHandle) : ViewModel() {
 
     val friendsSearchMode = state.getLiveData("friendsSearchMode", false)
     val friendsSearchQuery = state.getLiveData("friendsSearchQuery", "")
-    val currentVoteAndWinnerPage = state.getLiveData<Int>("voteFragmentScreen", 0)
+    val currentVoteAndWinnerPage = state.getLiveData("voteFragmentScreen", 0)
     val isFabMenuOpen = state.getLiveData<Boolean?>("isFabMenuOpen")
 
     val statusOperation = MutableLiveData<Boolean?>()

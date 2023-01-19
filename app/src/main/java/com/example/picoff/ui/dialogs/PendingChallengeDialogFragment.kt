@@ -24,7 +24,7 @@ import com.example.picoff.viewmodels.MainViewModel
 import java.io.File
 
 
-class PendingChallengeDialogFragment() : DialogFragment() {
+class PendingChallengeDialogFragment : DialogFragment() {
 
     companion object {
         private const val PENDING_CHALLENGE = "pendingChallenge"
