@@ -62,10 +62,8 @@ class SelectFriendDialogFragment() : DialogFragment() {
         rvSelectFriend.setHasFixedSize(true)
         rvSelectFriend.adapter = friendsAdapter
 
-        viewModel.friendsLoaded.observe(viewLifecycleOwner) {
-            if (it) {
-                friendsAdapter.updateData(viewModel.friends.value)
-            }
+        viewModel.friends.observe(viewLifecycleOwner) { friends ->
+            friendsAdapter.updateData(friends)
         }
 
         friendsAdapter.setOnItemClickListener(object : FriendsAdapter.OnItemClickListener {
@@ -81,14 +79,16 @@ class SelectFriendDialogFragment() : DialogFragment() {
             }
         })
 
-        viewModel.statusNewChallengeUploaded.observe(this) { status ->
+        viewModel.statusOperation.value = null
+        viewModel.statusOperation.observe(this) { status ->
             status?.let {
                 Toast.makeText(
-                    context, if (it) "Successfully started challenge!" else "Error: challenge start failed", Toast.LENGTH_SHORT
+                    context,
+                    if (it) "Successfully started challenge!" else "Error: challenge start failed",
+                    Toast.LENGTH_SHORT
                 ).show()
-                viewModel.statusNewChallengeUploaded.value = null
+                dismiss()
             }
-            dismiss()
         }
 
         return rootView

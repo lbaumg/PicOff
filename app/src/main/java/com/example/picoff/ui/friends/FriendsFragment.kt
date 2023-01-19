@@ -86,23 +86,21 @@ class FriendsFragment : Fragment() {
         rvFriends.adapter = friendsAdapter
 
         // Observe status of add friend operation
-        viewModel.statusAddFriend.observe(viewLifecycleOwner) { status ->
+        viewModel.statusOperation.value = null
+        viewModel.statusOperation.observe(viewLifecycleOwner) { status ->
             status?.let {
                 Toast.makeText(
                     context, "Add friend ${if (it) "successful" else " failed"}", Toast.LENGTH_SHORT
                 ).show()
-                viewModel.statusAddFriend.value = null
             }
         }
 
 
-        // Update the recycler view when the challenges are loaded
-        viewModel.friendsLoaded.observe(viewLifecycleOwner) { friendsLoaded ->
+        // Update the recycler view when the friends are loaded
+        viewModel.friends.observe(viewLifecycleOwner) { friends ->
             if (viewModel.friendsSearchMode.value == false) {
-                if (friendsLoaded) {
-                    val friendsColor = ContextCompat.getColor(requireContext(), R.color.already_friend)
-                    friendsAdapter.updateData(viewModel.friends.value, friendsColor)
-                }
+                val friendsColor = ContextCompat.getColor(requireContext(), R.color.already_friend)
+                friendsAdapter.updateData(friends, friendsColor)
             } else {
                 viewModel.friendsSearchQuery.value?.let {
                     if (it.isNotBlank()) {
@@ -117,8 +115,8 @@ class FriendsFragment : Fragment() {
                 val user = friendsAdapter.getItemForPosition(position)
                 if (friendsAdapter.isInSearchMode) {
                     // Add friend
-                    val isAlreadyFriend = viewModel.friends.value.contains(user)
-                    if (isAlreadyFriend) {
+                    val isAlreadyFriend = viewModel.friends.value?.contains(user)
+                    if (isAlreadyFriend == true) {
                         Toast.makeText(context, "Already friends!", Toast.LENGTH_SHORT).show()
                     } else {
                         viewModel.addFriend(user)

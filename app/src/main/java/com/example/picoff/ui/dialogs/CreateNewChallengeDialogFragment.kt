@@ -107,7 +107,8 @@ class CreateNewChallengeDialogFragment() : DialogFragment() {
             }
 
             // Observe status of challenge upload
-            viewModel.statusUploadChallenge.observe(viewLifecycleOwner) { status ->
+            viewModel.statusOperation.value = null
+            viewModel.statusOperation.observe(viewLifecycleOwner) { status ->
                 status?.let {
                     if (it) {
                         Toast.makeText(context, "Challenge uploaded!", Toast.LENGTH_SHORT).show()
@@ -116,7 +117,6 @@ class CreateNewChallengeDialogFragment() : DialogFragment() {
                     } else {
                         Toast.makeText(context, "Error: challenge not uploaded", Toast.LENGTH_LONG).show()
                     }
-                    viewModel.statusUploadChallenge.value = null
                 }
             }
         }

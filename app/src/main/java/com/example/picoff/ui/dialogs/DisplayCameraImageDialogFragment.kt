@@ -94,7 +94,8 @@ class DisplayCameraImageDialogFragment() : DialogFragment() {
             }
         }
 
-        viewModel.statusRespondedToChallenge.observe(this) { status ->
+        viewModel.statusOperation.value = null
+        viewModel.statusOperation.observe(this) { status ->
             status?.let { successful ->
                 if (successful) {
                     Toast.makeText(
@@ -104,13 +105,12 @@ class DisplayCameraImageDialogFragment() : DialogFragment() {
                     viewModel.hideBottomNav()
                     val action = HomeFragmentDirections.actionNavigationHomeToVoteFragment(pendingChallenge)
                     findNavController().navigate(action)
-                    dismiss()
                 } else {
                     Toast.makeText(
                         context, "Error: challenge response failed", Toast.LENGTH_SHORT
                     ).show()
                 }
-                viewModel.statusRespondedToChallenge.value = null
+                dismiss()
             }
         }
 

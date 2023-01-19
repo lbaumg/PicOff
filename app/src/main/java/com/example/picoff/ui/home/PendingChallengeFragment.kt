@@ -87,36 +87,34 @@ class PendingChallengeFragment : Fragment() {
         })
 
         // Observe viewModel.pendingChallengesLoaded and update recycler view on change
-        viewModel.pendingChallengesLoaded.observe(viewLifecycleOwner) { pChLoaded ->
-            if (pChLoaded) {
-                var challengesList = listOf<PendingChallengeModel>()
-                val isActiveFragmentReceivedScreen = viewModel.homeActiveFragment.value == ActiveFragment.RECEIVED
-                val isActiveFragmentSentScreen = viewModel.homeActiveFragment.value == ActiveFragment.SENT
-                if (isActiveFragmentReceivedScreen) {
-                    challengesList = viewModel.pendingChallengeList.value.filter { pCh ->
-                        pCh.status != "done" && (
-                                (pCh.uidRecipient == viewModel.auth.currentUser!!.uid && pCh.status == "open") // user is recipient and status is open
-                                        || (pCh.uidRecipient == viewModel.auth.currentUser!!.uid && pCh.status == "voteRecipient") // user is recipient and status is vote1
-                                        || (pCh.uidChallenger == viewModel.auth.currentUser!!.uid && pCh.status == "voteChallenger") // user is challenger and status is vote2
-                                        || pCh.status == "result" // status is result
-                                )
-                    }
-                } else if (isActiveFragmentSentScreen) {
-                    challengesList = viewModel.pendingChallengeList.value.filter { pCh ->
-                        (pCh.uidChallenger == viewModel.auth.currentUser!!.uid && pCh.status == "sent") // user is challenger and status is sent
-                                || (pCh.uidChallenger == viewModel.auth.currentUser!!.uid && pCh.status == "voteRecipient") // user is recipient and status is vote1
-                                || (pCh.uidRecipient == viewModel.auth.currentUser!!.uid && pCh.status == "voteChallenger") // user is recipient and status is vote1
-                                || pCh.status == "done"
-                    }
+        viewModel.pendingChallengeList.observe(viewLifecycleOwner) { pendingChallengeList ->
+            var challengesList = listOf<PendingChallengeModel>()
+            val isActiveFragmentReceivedScreen = viewModel.homeActiveFragment.value == ActiveFragment.RECEIVED
+            val isActiveFragmentSentScreen = viewModel.homeActiveFragment.value == ActiveFragment.SENT
+            if (isActiveFragmentReceivedScreen) {
+                challengesList = pendingChallengeList.filter { pCh ->
+                    pCh.status != "done" && (
+                            (pCh.uidRecipient == viewModel.auth.currentUser!!.uid && pCh.status == "open") // user is recipient and status is open
+                                    || (pCh.uidRecipient == viewModel.auth.currentUser!!.uid && pCh.status == "voteRecipient") // user is recipient and status is vote1
+                                    || (pCh.uidChallenger == viewModel.auth.currentUser!!.uid && pCh.status == "voteChallenger") // user is challenger and status is vote2
+                                    || pCh.status == "result" // status is result
+                            )
                 }
-
-                val sortOrder = listOf("result", "voteRecipient", "voteChallenger", "open", "sent", "done")
-                val sortedChallengesList = challengesList.sortedBy { sortOrder.indexOf(it.status) }
-
-                pendingChallengesAdapter.updatePendingChallengeList(sortedChallengesList, viewModel.homeActiveFragment.value!!)
-                rvPendingChallenges.visibility = View.VISIBLE
-                tvLoadingPendingChallenges.visibility = View.GONE
+            } else if (isActiveFragmentSentScreen) {
+                challengesList = pendingChallengeList.filter { pCh ->
+                    (pCh.uidChallenger == viewModel.auth.currentUser!!.uid && pCh.status == "sent") // user is challenger and status is sent
+                            || (pCh.uidChallenger == viewModel.auth.currentUser!!.uid && pCh.status == "voteRecipient") // user is recipient and status is vote1
+                            || (pCh.uidRecipient == viewModel.auth.currentUser!!.uid && pCh.status == "voteChallenger") // user is recipient and status is vote1
+                            || pCh.status == "done"
+                }
             }
+
+            val sortOrder = listOf("result", "voteRecipient", "voteChallenger", "open", "sent", "done")
+            val sortedChallengesList = challengesList.sortedBy { sortOrder.indexOf(it.status) }
+
+            pendingChallengesAdapter.updatePendingChallengeList(sortedChallengesList, viewModel.homeActiveFragment.value!!)
+            rvPendingChallenges.visibility = View.VISIBLE
+            tvLoadingPendingChallenges.visibility = View.GONE
         }
 
 

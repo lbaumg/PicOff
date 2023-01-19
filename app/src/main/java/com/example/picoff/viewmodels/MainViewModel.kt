@@ -22,8 +22,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
@@ -32,51 +30,40 @@ import java.util.*
 
 const val PREFIX_IMAGE_STORAGE_PATH = "challenges"
 
-class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
+class MainViewModel(state: SavedStateHandle) : ViewModel() {
 
     var homeActiveFragment = state.getLiveData("homeActiveFragment", ActiveFragment.RECEIVED)
     fun setHomeActiveFragment(activeFragment: ActiveFragment) {
         homeActiveFragment.value = activeFragment
     }
 
-    private val _challengesLoaded = MutableLiveData(false)
-    val challengesLoaded: LiveData<Boolean>
-        get() = _challengesLoaded
-
-    private val _pendingChallengesLoaded = MutableLiveData(false)
-    val pendingChallengesLoaded: LiveData<Boolean>
-        get() = _pendingChallengesLoaded
-
-    private val _friendsLoaded = MutableLiveData(false)
-    val friendsLoaded: LiveData<Boolean>
-        get() = _friendsLoaded
-
     val friendsSearchMode = state.getLiveData("friendsSearchMode", false)
     val friendsSearchQuery = state.getLiveData("friendsSearchQuery", "")
     val currentVoteAndWinnerPage = state.getLiveData<Int>("voteFragmentScreen", 0)
     val isFabMenuOpen = state.getLiveData<Boolean?>("isFabMenuOpen")
-    val statusNewChallengeUploaded = MutableLiveData<Boolean?>()
-    val statusRespondedToChallenge = MutableLiveData<Boolean?>()
+
+    val statusOperation = MutableLiveData<Boolean?>()
     val jumpToChallengeList = MutableLiveData<Boolean?>()
-    val statusAddFriend = MutableLiveData<Boolean?>()
-    val statusUploadChallenge = MutableLiveData<Boolean?>()
 
     private val _bottomNavigationVisibility = state.getLiveData("bottomNavigationVisibility", View.VISIBLE)
     val bottomNavigationVisibility: LiveData<Int>
         get() = _bottomNavigationVisibility
 
-    private val _challengeList = MutableStateFlow<ArrayList<ChallengeModel>>(arrayListOf())
-    val challengeList = _challengeList.asStateFlow()
+    private val _challengeList = MutableLiveData<ArrayList<ChallengeModel>>(arrayListOf())
+    val challengeList: LiveData<ArrayList<ChallengeModel>>
+        get() = _challengeList
 
-    private val _pendingChallengeList = MutableStateFlow<ArrayList<PendingChallengeModel>>(arrayListOf())
-    val pendingChallengeList = _pendingChallengeList.asStateFlow()
+    private val _pendingChallengeList = MutableLiveData<ArrayList<PendingChallengeModel>>(arrayListOf())
+    val pendingChallengeList: LiveData<ArrayList<PendingChallengeModel>>
+        get() = _pendingChallengeList
 
     private val _users = MutableLiveData<ArrayList<UserModel>>(arrayListOf())
     val users: LiveData<ArrayList<UserModel>>
         get() = _users
 
-    private val _friends = MutableStateFlow<ArrayList<UserModel>>(arrayListOf())
-    val friends = _friends.asStateFlow()
+    private val _friends = MutableLiveData<ArrayList<UserModel>>(arrayListOf())
+    val friends: LiveData<ArrayList<UserModel>>
+        get() = _friends
 
     private var storageRef = FirebaseStorage.getInstance().getReferenceFromUrl("gs://picoff-5abdb.appspot.com/")
     private var dbRef = FirebaseDatabase.getInstance().reference
@@ -118,7 +105,6 @@ class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
                             users.value?.let { users -> tempList.add(users.first { it.uid == friend.key!! }) }
                         }
                         _friends.value = tempList
-                        _friendsLoaded.value = true
                     }
                 }
 
@@ -132,9 +118,9 @@ class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
         }
         dbRefFriends.child(auth.currentUser!!.uid).child(user.uid).setValue(true)
             .addOnCompleteListener {
-                statusAddFriend.value = true
+                this.statusOperation.value = true
             }.addOnFailureListener {
-                statusAddFriend.value = false
+                this.statusOperation.value = false
             }
     }
 
@@ -171,7 +157,6 @@ class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
                         tempList.add(challengeData!!)
                     }
                     _challengeList.value = tempList
-                    _challengesLoaded.value = true
                 }
             }
 
@@ -203,7 +188,6 @@ class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
                     }
 
                     _pendingChallengeList.value = tempList
-                    _pendingChallengesLoaded.value = true
                 }
             }
 
@@ -220,9 +204,9 @@ class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
         val challenge = ChallengeModel(challengeId, challengeTitle, challengeDesc, auth.currentUser!!.uid)
         dbRefChallenges.child(challengeId).setValue(challenge)
             .addOnCompleteListener{
-                statusUploadChallenge.value = true
+                this.statusOperation.value = true
             }.addOnFailureListener {
-                statusUploadChallenge.value = false
+                this.statusOperation.value = false
             }
     }
 
@@ -245,7 +229,7 @@ class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
             uploadTask.continueWithTask { task ->
                 if (!task.isSuccessful) {
                     task.exception?.let {
-                        statusNewChallengeUploaded.value = false
+                        this.statusOperation.value = false
                     }
                 }
                 imageRef.downloadUrl
@@ -255,10 +239,10 @@ class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
                     newPendingChallenge.challengeId = challengeId
                     newPendingChallenge.challengeImageUrlChallenger = challengeImageChallenger.toString()
                     dbRefPendingChallenges.child(challengeId).setValue(newPendingChallenge)
-                    statusNewChallengeUploaded.value = true
+                    this.statusOperation.value = true
                 } else {
                     // handle failure
-                    statusNewChallengeUploaded.value = false
+                    this.statusOperation.value = false
                 }
             }
         }
@@ -277,7 +261,7 @@ class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
             uploadTask.continueWithTask { task ->
                 if (!task.isSuccessful) {
                     task.exception?.let {
-                        statusRespondedToChallenge.value = false
+                        this.statusOperation.value = false
                     }
                 }
                 imageRef.downloadUrl
@@ -287,10 +271,10 @@ class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
                     pendingChallenge.challengeImageUrlRecipient = challengeImageRecipientUrl.toString()
                     pendingChallenge.status = "voteRecipient"
                     dbRefPendingChallenges.child(pendingChallenge.challengeId!!).setValue(pendingChallenge)
-                    statusRespondedToChallenge.value = true
+                    this.statusOperation.value = true
                 } else {
                     // handle failure
-                    statusRespondedToChallenge.value = false
+                    this.statusOperation.value = false
                 }
             }
         }

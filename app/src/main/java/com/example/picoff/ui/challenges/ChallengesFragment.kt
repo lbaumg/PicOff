@@ -63,14 +63,12 @@ class ChallengesFragment : Fragment() {
 
 
         // Update the recycler view when the challenges are loaded
-        viewModel.challengesLoaded.observe(viewLifecycleOwner) {
-            if (it) {
-                challengesAdapter.updateChallengeList(viewModel.challengeList.value)
+        viewModel.challengeList.observe(viewLifecycleOwner) { challengeList ->
+            challengesAdapter.updateChallengeList(challengeList)
 
-                // Hide loading screen and show recycler view
-                rvChallenges.visibility = View.VISIBLE
-                tvLoadingData.visibility = View.GONE
-            }
+            // Hide loading screen and show recycler view
+            rvChallenges.visibility = View.VISIBLE
+            tvLoadingData.visibility = View.GONE
         }
 
         // Override onItemClickListener to open ChallengeDialogFragment

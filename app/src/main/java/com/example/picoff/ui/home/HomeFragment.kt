@@ -64,7 +64,7 @@ class HomeFragment : Fragment() {
             viewModel.jumpToChallengeList.value = true
         }
         binding.fabRandomChallenge.setOnClickListener {
-            val challenge = viewModel.challengeList.value.random()
+            val challenge = viewModel.challengeList.value!!.random()
             val dialog = ChallengeDialogFragment.newInstance(challenge)
             dialog.show(parentFragmentManager, "challengeDialog")
         }
@@ -148,12 +148,6 @@ class HomeFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         viewModel.showBottomNav()
-    }
-
-    override fun onPause() {
-        super.onPause()
-//        viewModel.homeActiveFragment = ActiveFragment.RECEIVED
-//        viewModel.setHomeActiveFragment1(ActiveFragment.RECEIVED)
     }
 
     override fun onDestroyView() {

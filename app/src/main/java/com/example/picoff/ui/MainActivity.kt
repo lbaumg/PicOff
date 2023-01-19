@@ -60,7 +60,9 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         viewModel.jumpToChallengeList.observe(this) {
-            binding.navView.selectedItemId = R.id.navigation_challenges
+            if (it == true){
+                binding.navView.selectedItemId = R.id.navigation_challenges
+            }
         }
 
         viewModel.bottomNavigationVisibility.observe(this, Observer { navVisibility ->
