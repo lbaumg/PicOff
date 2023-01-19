@@ -34,8 +34,8 @@ class VoteFragment : Fragment() {
     private lateinit var layoutVsScreen: RelativeLayout
 
     private val viewModel: MainViewModel by activityViewModels {
-    SavedStateViewModelFactory(requireActivity().application, requireActivity())
-}
+        SavedStateViewModelFactory(requireActivity().application, requireActivity())
+    }
     private val args: VoteFragmentArgs by navArgs()
 
     override fun onCreateView(
@@ -67,14 +67,23 @@ class VoteFragment : Fragment() {
         binding.tvChallengeVs2.text = pendingChallenge.additionalInfoRecipient
 
         ivImgChallenger.setOnClickListener {
-            layoutImgChallenger.visibility = View.INVISIBLE
-            layoutImgRecipient.visibility = View.VISIBLE
+            viewModel.currentVoteAndWinnerPage.value = 1
         }
 
         ivImgRecipient.setOnClickListener {
-            layoutImgRecipient.visibility = View.INVISIBLE
-            layoutVsScreen.visibility = View.VISIBLE
+            viewModel.currentVoteAndWinnerPage.value = 2
         }
+
+        viewModel.currentVoteAndWinnerPage.observe(viewLifecycleOwner) {
+            if (it == 1) {
+                layoutImgChallenger.visibility = View.INVISIBLE
+                layoutImgRecipient.visibility = View.VISIBLE
+            } else if (it == 2) {
+                layoutImgRecipient.visibility = View.INVISIBLE
+                layoutVsScreen.visibility = View.VISIBLE
+            }
+        }
+
 
         ivVs1.setOnClickListener { // vote for challenger
             voteAndClose(1)
@@ -102,6 +111,7 @@ class VoteFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        viewModel.currentVoteAndWinnerPage.value = 0
         _binding = null
     }
 }

@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels {
         SavedStateViewModelFactory(application, this)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -139,7 +140,8 @@ class MainActivity : AppCompatActivity() {
 
         if (intent?.type == "text/plain") {
             val data = intent?.extras?.getString(Intent.EXTRA_TEXT)?.substringAfter("\"")?.substringBefore("\"")
-            viewModel.sharedUserName.value = data
+            viewModel.friendsSearchQuery.value = data
+            viewModel.friendsSearchMode.value = true
             navView.selectedItemId = R.id.navigation_friends
         }
     }

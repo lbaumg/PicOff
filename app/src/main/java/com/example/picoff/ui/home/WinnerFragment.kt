@@ -23,8 +23,8 @@ class WinnerFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: MainViewModel by activityViewModels {
-    SavedStateViewModelFactory(requireActivity().application, requireActivity())
-}
+        SavedStateViewModelFactory(requireActivity().application, requireActivity())
+    }
     private val args: WinnerFragmentArgs by navArgs()
 
     private lateinit var pendingChallenge: PendingChallengeModel
@@ -49,16 +49,12 @@ class WinnerFragment : Fragment() {
         val isADraw = pendingChallenge.voteChallenger != pendingChallenge.voteRecipient
         if (isADraw) {
             binding.layoutWinnerVsScreen.setOnClickListener {
-                binding.tvWinnerScreenVs.text = "DRAW!"
-                binding.layoutWinnerVsScreen.setOnClickListener {
-                    setChallengeDone()
-                    closeFragment()
-                }
+                viewModel.currentVoteAndWinnerPage.value = 2
             }
         } else {
-            var winnerImgUrl: String?
-            var winnerAvatarUrl: String?
-            var winnerName: String?
+            val winnerImgUrl: String?
+            val winnerAvatarUrl: String?
+            val winnerName: String?
             if (pendingChallenge.voteChallenger == 1) {
                 winnerImgUrl = pendingChallenge.challengeImageUrlChallenger
                 winnerAvatarUrl = pendingChallenge.photoUrlChallenger
@@ -73,13 +69,25 @@ class WinnerFragment : Fragment() {
             binding.tvWinnerName.text = winnerName
 
             binding.layoutWinnerVsScreen.setOnClickListener {
-                binding.layoutWinnerVsScreen.visibility = View.INVISIBLE
-                binding.layoutWinnerScreen.visibility = View.VISIBLE
+                viewModel.currentVoteAndWinnerPage.value = 1
             }
 
             binding.layoutWinnerScreen.setOnClickListener {
                 setChallengeDone()
                 closeFragment()
+            }
+        }
+
+        viewModel.currentVoteAndWinnerPage.observe(viewLifecycleOwner) {
+            if (it == 1) {
+                binding.layoutWinnerVsScreen.visibility = View.INVISIBLE
+                binding.layoutWinnerScreen.visibility = View.VISIBLE
+            } else if (it == 2) {
+                binding.tvWinnerScreenVs.text = "DRAW!"
+                binding.layoutWinnerVsScreen.setOnClickListener {
+                    setChallengeDone()
+                    closeFragment()
+                }
             }
         }
 
@@ -100,6 +108,7 @@ class WinnerFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        viewModel.currentVoteAndWinnerPage.value = 0
         _binding = null
     }
 

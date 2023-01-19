@@ -3,6 +3,7 @@ package com.example.picoff.ui.dialogs
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.SavedStateViewModelFactory
@@ -22,7 +24,21 @@ import com.example.picoff.viewmodels.MainViewModel
 import java.io.File
 
 
-class PendingChallengeDialogFragment(private val pendingChallenge: PendingChallengeModel, private val showOnlyInfo: Boolean = false) : DialogFragment() {
+class PendingChallengeDialogFragment() : DialogFragment() {
+
+    companion object {
+        private const val PENDING_CHALLENGE = "pendingChallenge"
+        private const val SHOW_ONLY_INFO = "showOnlyInfo"
+
+        fun newInstance(pendingChallenge: PendingChallengeModel, showOnlyInfo: Boolean = false) = PendingChallengeDialogFragment().apply {
+            arguments = bundleOf(
+                PENDING_CHALLENGE to pendingChallenge,
+                SHOW_ONLY_INFO to showOnlyInfo)
+        }
+    }
+
+    private var showOnlyInfo: Boolean = false
+    private lateinit var pendingChallenge: PendingChallengeModel
 
     private lateinit var tvChallengerName: TextView
     private lateinit var tvChallengeTitle: TextView
@@ -44,6 +60,15 @@ class PendingChallengeDialogFragment(private val pendingChallenge: PendingChalle
         savedInstanceState: Bundle?
     ): View {
         val rootView: View = inflater.inflate(R.layout.dialog_pending_challenge, container, false)
+
+        // Get arguments
+        showOnlyInfo = requireArguments().getBoolean(SHOW_ONLY_INFO)
+        pendingChallenge = if (Build.VERSION.SDK_INT >= 33) {
+            requireArguments().getParcelable(PENDING_CHALLENGE, PendingChallengeModel::class.java)!!
+        } else {
+            requireArguments().getParcelable(PENDING_CHALLENGE)!!
+        }
+
 
         tvChallengerName = rootView.findViewById(R.id.tvDlgPendingChallengerName)
         ivUserAvatar = rootView.findViewById(R.id.ivDlgPendingChallengeAvatar)
@@ -108,10 +133,9 @@ class PendingChallengeDialogFragment(private val pendingChallenge: PendingChalle
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 if (mediaPath != null) {
-                    val bitmap = viewModel.getBitmapFromMediaPath(mediaPath!!)
-                    val dialog = DisplayCameraImageDialogFragment(
+                    val dialog = DisplayCameraImageDialogFragment.newInstance(
                         pendingChallenge = pendingChallenge,
-                        bitmap = bitmap,
+                        filePath = mediaPath!!.absolutePath,
                         responseMode = true
                     )
                     dialog.show(parentFragmentManager, "displayCameraImageDialog")

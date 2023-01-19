@@ -3,6 +3,7 @@ package com.example.picoff.ui.dialogs
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.os.Build.VERSION
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.SavedStateViewModelFactory
@@ -22,9 +24,18 @@ import com.example.picoff.ui.MainActivity
 import com.example.picoff.viewmodels.MainViewModel
 import java.io.File
 
-val REQUEST_IMAGE_CAPTURE = 100
+class ChallengeDialogFragment() : DialogFragment() {
 
-class ChallengeDialogFragment(private val challengeModel: ChallengeModel) : DialogFragment() {
+    companion object {
+        private const val CHALLENGE = "challenge"
+
+        fun newInstance(challenge: ChallengeModel) = ChallengeDialogFragment().apply {
+            arguments = bundleOf(
+                CHALLENGE to challenge)
+        }
+    }
+
+    private lateinit var challenge: ChallengeModel
 
     private lateinit var tvChallengeCreator: TextView
     private lateinit var tvChallengeDialogTitle: TextView
@@ -34,8 +45,8 @@ class ChallengeDialogFragment(private val challengeModel: ChallengeModel) : Dial
     private lateinit var btnChallengeFriend: Button
 
     private val viewModel: MainViewModel by activityViewModels {
-    SavedStateViewModelFactory(requireActivity().application, requireActivity())
-}
+        SavedStateViewModelFactory(requireActivity().application, requireActivity())
+    }
 
     private var mediaPath: File? = null
 
@@ -46,20 +57,30 @@ class ChallengeDialogFragment(private val challengeModel: ChallengeModel) : Dial
     ): View {
         val rootView: View = inflater.inflate(R.layout.dialog_challenge, container, false)
 
+        challenge = if (VERSION.SDK_INT >= 33) {
+            requireArguments().getParcelable(CHALLENGE, ChallengeModel::class.java)!!
+        } else {
+            requireArguments().getParcelable(CHALLENGE)!!
+        }
+
         tvChallengeCreator = rootView.findViewById(R.id.tvChallengeCreator)
         ivUserAvatar = rootView.findViewById(R.id.ivChallengeCreatorAvatar)
 
         // Get display name + avatar of challenge creator from viewModel.users
-        val creator = viewModel.users.value.first { it.uid == challengeModel.creatorId }
-        tvChallengeCreator.text = creator.displayName
-        Glide.with(requireContext()).load(creator.photoUrl).into(ivUserAvatar)
-        rootView.findViewById<LinearLayout>(R.id.layoutAvatar).visibility = View.VISIBLE
+        viewModel.users.observe(viewLifecycleOwner) { users ->
+            if (users.isNotEmpty()) {
+                val creator = users.first { it.uid == challenge.creatorId }
+                tvChallengeCreator.text = creator.displayName
+                Glide.with(ivUserAvatar.context).load(creator.photoUrl).into(ivUserAvatar)
+                rootView.findViewById<LinearLayout>(R.id.layoutAvatar).visibility = View.VISIBLE
+            }
+        }
 
         tvChallengeDialogTitle = rootView.findViewById(R.id.tvChallengeDialogTitle)
-        tvChallengeDialogTitle.text = challengeModel.challengeTitle
+        tvChallengeDialogTitle.text = challenge.challengeTitle
 
         tvChallengeDialogDesc = rootView.findViewById(R.id.tvChallengeDialogDesc)
-        tvChallengeDialogDesc.text = challengeModel.challengeDesc
+        tvChallengeDialogDesc.text = challenge.challengeDesc
 
 
         btnCancel = rootView.findViewById(R.id.btnDialogCancel)
@@ -99,20 +120,22 @@ class ChallengeDialogFragment(private val challengeModel: ChallengeModel) : Dial
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 if (mediaPath != null) {
-                    val bitmap = viewModel.getBitmapFromMediaPath(mediaPath!!)
+
                     val newChallenge = PendingChallengeModel(
-                        challengeTitle = challengeModel.challengeTitle,
-                        challengeDesc = challengeModel.challengeDesc,
+                        challengeTitle = challenge.challengeTitle,
+                        challengeDesc = challenge.challengeDesc,
                         uidChallenger = viewModel.auth.currentUser?.uid,
                         nameChallenger = viewModel.auth.currentUser?.displayName,
                         photoUrlChallenger = viewModel.auth.currentUser?.photoUrl.toString(),
                         status = "sent"
                     )
-                    val dialog = DisplayCameraImageDialogFragment(
+
+                    val dialog = DisplayCameraImageDialogFragment.newInstance(
                         pendingChallenge = newChallenge,
-                        bitmap = bitmap,
+                        filePath = mediaPath!!.absolutePath,
                         responseMode = false
                     )
+
                     dialog.show(parentFragmentManager, "displayCameraImageDialog")
                 } else {
                     Toast.makeText(context, "Error: image could not be loaded", Toast.LENGTH_SHORT).show()

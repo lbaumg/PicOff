@@ -49,7 +49,7 @@ class ChallengesFragment : Fragment() {
         // Set onClickListener to new challenge create button
         btnNewChallenge = root.findViewById(R.id.buttonCreateNew)
         btnNewChallenge.setOnClickListener {
-            val dialog = CreateNewChallengeDialogFragment(false)
+            val dialog = CreateNewChallengeDialogFragment.newInstance(false)
             dialog.show(parentFragmentManager, "createNewChallengeDialog")
         }
 
@@ -76,7 +76,7 @@ class ChallengesFragment : Fragment() {
         // Override onItemClickListener to open ChallengeDialogFragment
         challengesAdapter.setOnItemClickListener(object : ChallengesAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                val dialog = ChallengeDialogFragment(challengesAdapter.getItemForPosition(position))
+                val dialog = ChallengeDialogFragment.newInstance(challengesAdapter.getItemForPosition(position))
                 dialog.show(parentFragmentManager, "challengeDialog")
             }
         })

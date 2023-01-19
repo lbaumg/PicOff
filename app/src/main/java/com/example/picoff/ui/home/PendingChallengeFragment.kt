@@ -33,8 +33,8 @@ class PendingChallengeFragment : Fragment() {
     private lateinit var pendingChallengesAdapter: PendingChallengesAdapter
 
     private val viewModel: MainViewModel by activityViewModels {
-    SavedStateViewModelFactory(requireActivity().application, requireActivity())
-}
+        SavedStateViewModelFactory(requireActivity().application, requireActivity())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -124,7 +124,7 @@ class PendingChallengeFragment : Fragment() {
     }
 
     fun openPendingChallengesInfo(pCh: PendingChallengeModel, showOnlyInfo: Boolean) {
-        val dialog = PendingChallengeDialogFragment(pCh, showOnlyInfo)
+        val dialog = PendingChallengeDialogFragment.newInstance(pCh, showOnlyInfo)
         dialog.show(parentFragmentManager, "pendingChallengeDialog")
     }
 

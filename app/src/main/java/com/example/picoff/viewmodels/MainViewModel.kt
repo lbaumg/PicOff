@@ -32,14 +32,12 @@ import java.util.*
 
 const val PREFIX_IMAGE_STORAGE_PATH = "challenges"
 
-class MainViewModel(state: SavedStateHandle) : ViewModel() {
+class MainViewModel(private val state: SavedStateHandle) : ViewModel() {
 
-    var homeActiveFragment = state.getLiveData<ActiveFragment>("homeActiveFragment", ActiveFragment.RECEIVED)
+    var homeActiveFragment = state.getLiveData("homeActiveFragment", ActiveFragment.RECEIVED)
     fun setHomeActiveFragment(activeFragment: ActiveFragment) {
         homeActiveFragment.value = activeFragment
     }
-
-    var friendsSearchQuery = state.getLiveData<String>("friendsSearchQuery", "")
 
     private val _challengesLoaded = MutableLiveData(false)
     val challengesLoaded: LiveData<Boolean>
@@ -49,15 +47,21 @@ class MainViewModel(state: SavedStateHandle) : ViewModel() {
     val pendingChallengesLoaded: LiveData<Boolean>
         get() = _pendingChallengesLoaded
 
-    val sharedUserName = MutableLiveData<String?>()
-    val isFabMenuOpen = state.getLiveData<Boolean?>("isFabMenuOpen") //<Boolean?>()MutableLiveData<Boolean?>()
+    private val _friendsLoaded = MutableLiveData(false)
+    val friendsLoaded: LiveData<Boolean>
+        get() = _friendsLoaded
+
+    val friendsSearchMode = state.getLiveData("friendsSearchMode", false)
+    val friendsSearchQuery = state.getLiveData("friendsSearchQuery", "")
+    val currentVoteAndWinnerPage = state.getLiveData<Int>("voteFragmentScreen", 0)
+    val isFabMenuOpen = state.getLiveData<Boolean?>("isFabMenuOpen")
     val statusNewChallengeUploaded = MutableLiveData<Boolean?>()
     val statusRespondedToChallenge = MutableLiveData<Boolean?>()
     val jumpToChallengeList = MutableLiveData<Boolean?>()
     val statusAddFriend = MutableLiveData<Boolean?>()
     val statusUploadChallenge = MutableLiveData<Boolean?>()
 
-    private val _bottomNavigationVisibility = MutableLiveData<Int>()
+    private val _bottomNavigationVisibility = state.getLiveData("bottomNavigationVisibility", View.VISIBLE)
     val bottomNavigationVisibility: LiveData<Int>
         get() = _bottomNavigationVisibility
 
@@ -67,8 +71,9 @@ class MainViewModel(state: SavedStateHandle) : ViewModel() {
     private val _pendingChallengeList = MutableStateFlow<ArrayList<PendingChallengeModel>>(arrayListOf())
     val pendingChallengeList = _pendingChallengeList.asStateFlow()
 
-    private val _users = MutableStateFlow<ArrayList<UserModel>>(arrayListOf())
-    val users = _users.asStateFlow()
+    private val _users = MutableLiveData<ArrayList<UserModel>>(arrayListOf())
+    val users: LiveData<ArrayList<UserModel>>
+        get() = _users
 
     private val _friends = MutableStateFlow<ArrayList<UserModel>>(arrayListOf())
     val friends = _friends.asStateFlow()
@@ -110,9 +115,10 @@ class MainViewModel(state: SavedStateHandle) : ViewModel() {
                     if (snapshot.exists()) {
                         val tempList = arrayListOf<UserModel>()
                         for (friend in snapshot.children) {
-                            tempList.add(users.value.first { it.uid == friend.key!! })
+                            users.value?.let { users -> tempList.add(users.first { it.uid == friend.key!! }) }
                         }
                         _friends.value = tempList
+                        _friendsLoaded.value = true
                     }
                 }
 
@@ -222,8 +228,9 @@ class MainViewModel(state: SavedStateHandle) : ViewModel() {
 
     fun startNewChallenge(
         newPendingChallenge: PendingChallengeModel,
-        bitmap: Bitmap,
+        filePath: String,
     ) {
+        val bitmap = getBitmapFromMediaPath(filePath)
         if (auth.currentUser != null) {
             val challengeId = dbRefPendingChallenges.push().key!!
 
@@ -310,13 +317,13 @@ class MainViewModel(state: SavedStateHandle) : ViewModel() {
         }
     }
 
-    fun getBitmapFromMediaPath(mediaPath: File): Bitmap {
-        val myBitmap = BitmapFactory.decodeFile(mediaPath.absolutePath)
+    fun getBitmapFromMediaPath(filePath: String): Bitmap {
+        val myBitmap = BitmapFactory.decodeFile(filePath)
         val height = myBitmap.height * 512 / myBitmap.width
         val scale = Bitmap.createScaledBitmap(myBitmap, 512, height, true)
         var rotate = 0F
         try {
-            val exif = ExifInterface(mediaPath.absolutePath)
+            val exif = ExifInterface(filePath)
 
             val orientation: Int = exif.getAttributeInt(
                 ExifInterface.TAG_ORIENTATION,

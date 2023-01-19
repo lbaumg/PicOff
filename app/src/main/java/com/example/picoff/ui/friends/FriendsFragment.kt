@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -38,6 +39,8 @@ class FriendsFragment : Fragment() {
     private lateinit var rvFriends: RecyclerView
     private val friendsAdapter = FriendsAdapter()
 
+    private lateinit var etSearchFriend: EditText
+
     private val viewModel: MainViewModel by activityViewModels {
         SavedStateViewModelFactory(requireActivity().application, requireActivity())
     }
@@ -52,6 +55,7 @@ class FriendsFragment : Fragment() {
         val root: View = binding.root
 
         auth = FirebaseAuth.getInstance()
+        etSearchFriend = root.findViewById(R.id.etSearchFriend)
 
         // Set user name and avatar
         binding.tvAccountName.text = auth.currentUser?.displayName
@@ -91,8 +95,23 @@ class FriendsFragment : Fragment() {
             }
         }
 
-        val friendsColor = ContextCompat.getColor(requireContext(), R.color.already_friend)
-        friendsAdapter.updateData(viewModel.friends.value, friendsColor)
+
+        // Update the recycler view when the challenges are loaded
+        viewModel.friendsLoaded.observe(viewLifecycleOwner) { friendsLoaded ->
+            if (viewModel.friendsSearchMode.value == false) {
+                if (friendsLoaded) {
+                    val friendsColor = ContextCompat.getColor(requireContext(), R.color.already_friend)
+                    friendsAdapter.updateData(viewModel.friends.value, friendsColor)
+                }
+            } else {
+                viewModel.friendsSearchQuery.value?.let {
+                    if (it.isNotBlank()) {
+                        searchForUser(it)
+                    }
+                }
+            }
+        }
+
         friendsAdapter.setOnItemClickListener(object : FriendsAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
                 val user = friendsAdapter.getItemForPosition(position)
@@ -111,8 +130,8 @@ class FriendsFragment : Fragment() {
         })
 
         binding.ibSearchButton.setOnClickListener {
-            val name = binding.etSearchFriend.text.toString()
-            searchForUser(name)
+            viewModel.friendsSearchQuery.value = etSearchFriend.text.toString()
+            viewModel.friendsSearchMode.value = true
         }
 
 
@@ -124,15 +143,12 @@ class FriendsFragment : Fragment() {
             startActivity(sendIntent)
         }
 
-        if (viewModel.sharedUserName.value != null) {
-            binding.etSearchFriend.setText(viewModel.sharedUserName.value)
-            viewModel.sharedUserName.value = null
-        } else {
-            binding.etSearchFriend.setText(viewModel.friendsSearchQuery.value)
-        }
-
-        if (binding.etSearchFriend.text.isNotBlank()) {
-            searchForUser(binding.etSearchFriend.text.toString())
+        viewModel.friendsSearchMode.observe(viewLifecycleOwner) {
+            viewModel.friendsSearchQuery.value?.let {
+                if (it.isNotBlank()) {
+                    searchForUser(it)
+                }
+            }
         }
 
         return root
@@ -141,7 +157,7 @@ class FriendsFragment : Fragment() {
     private fun searchForUser(name: String) {
         var color = Color.WHITE
         val userList: ArrayList<UserModel> = try {
-            val user = viewModel.users.value.first { it.displayName == name }
+            val user = viewModel.users.value!!.first { it.displayName == name }
             val isUserHimself = user.uid == auth.currentUser?.uid
             if (isUserHimself) {
                 arrayListOf()
@@ -158,11 +174,26 @@ class FriendsFragment : Fragment() {
         friendsAdapter.updateData(userList, color, true)
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        // Restore from process kill
+        etSearchFriend.setText(viewModel.friendsSearchQuery.value)
+
+    }
+
     override fun onPause() {
         super.onPause()
-        viewModel.friendsSearchQuery.value = binding.etSearchFriend.text.toString()
-//        binding.etSearchFriend.text.clear()
+        viewModel.friendsSearchQuery.value = etSearchFriend.text.toString()
+        etSearchFriend.text.clear()
         friendsAdapter.clearSearch()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.friendsSearchQuery.value = ""
+        viewModel.friendsSearchMode.value = false
+        etSearchFriend.text.clear()
     }
 
     override fun onDestroyView() {

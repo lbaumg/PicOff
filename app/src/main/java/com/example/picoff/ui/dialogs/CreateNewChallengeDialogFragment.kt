@@ -13,10 +13,11 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.core.content.FileProvider
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.SavedStateViewModelFactory
 import com.example.picoff.R
 import com.example.picoff.models.PendingChallengeModel
 import com.example.picoff.ui.MainActivity
@@ -26,8 +27,18 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import java.io.File
 
-class CreateNewChallengeDialogFragment(private val withoutUpload: Boolean = false) : DialogFragment() {
+class CreateNewChallengeDialogFragment() : DialogFragment() {
 
+    companion object {
+        private const val WITHOUT_UPLOAD = "withoutUpload"
+
+        fun newInstance(withoutUpload: Boolean) = CreateNewChallengeDialogFragment().apply {
+            arguments = bundleOf(
+                WITHOUT_UPLOAD to withoutUpload)
+        }
+    }
+
+    private var withoutUpload: Boolean = false
     private lateinit var etChallengeTitle: EditText
     private lateinit var etChallengeDesc: EditText
     private lateinit var btnUpload: Button
@@ -37,8 +48,8 @@ class CreateNewChallengeDialogFragment(private val withoutUpload: Boolean = fals
 
     private var mediaPath: File? = null
     private val viewModel: MainViewModel by activityViewModels {
-    SavedStateViewModelFactory(requireActivity().application, requireActivity())
-}
+        SavedStateViewModelFactory(requireActivity().application, requireActivity())
+    }
 
     private var challengeTitle: String? = null
     private var challengeDesc: String? = null
@@ -50,6 +61,9 @@ class CreateNewChallengeDialogFragment(private val withoutUpload: Boolean = fals
         savedInstanceState: Bundle?
     ): View {
         val rootView: View = inflater.inflate(R.layout.dialog_create_new_challenge, container, false)
+
+        // Get argument
+        withoutUpload = requireArguments().getBoolean(WITHOUT_UPLOAD)
 
         btnUpload = rootView.findViewById(R.id.btnNewChallengeUpload)
         etChallengeTitle = rootView.findViewById(R.id.etNewChallengeChallengeName)
@@ -145,7 +159,6 @@ class CreateNewChallengeDialogFragment(private val withoutUpload: Boolean = fals
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 if (mediaPath != null) {
-                    val bitmap = viewModel.getBitmapFromMediaPath(mediaPath!!)
                     val newChallenge = PendingChallengeModel(
                         challengeTitle = challengeTitle,
                         challengeDesc = challengeDesc,
@@ -154,9 +167,9 @@ class CreateNewChallengeDialogFragment(private val withoutUpload: Boolean = fals
                         photoUrlChallenger = viewModel.auth.currentUser?.photoUrl.toString(),
                         status = "sent"
                     )
-                    val dialog = DisplayCameraImageDialogFragment(
+                    val dialog = DisplayCameraImageDialogFragment.newInstance(
                         pendingChallenge = newChallenge,
-                        bitmap = bitmap,
+                        filePath = mediaPath!!.absolutePath,
                         responseMode = false
                     )
                     dialog.show(parentFragmentManager, "displayCameraImageDialog")

@@ -57,7 +57,7 @@ class HomeFragment : Fragment() {
             viewModel.isFabMenuOpen.value = !(viewModel.isFabMenuOpen.value?:false)
         }
         binding.fabCreateNew.setOnClickListener {
-            val dialog = CreateNewChallengeDialogFragment(true)
+            val dialog = CreateNewChallengeDialogFragment.newInstance(true)
             dialog.show(parentFragmentManager, "createNewChallengeDialog")
         }
         binding.fabListChallenges.setOnClickListener {
@@ -65,7 +65,7 @@ class HomeFragment : Fragment() {
         }
         binding.fabRandomChallenge.setOnClickListener {
             val challenge = viewModel.challengeList.value.random()
-            val dialog = ChallengeDialogFragment(challenge)
+            val dialog = ChallengeDialogFragment.newInstance(challenge)
             dialog.show(parentFragmentManager, "challengeDialog")
         }
 
